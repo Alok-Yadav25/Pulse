@@ -16,6 +16,14 @@ class Settings(BaseSettings):
     cron_secret: str = ""
     salt_secret: str = ""
     llm_api_key: str = ""
+    public_api_url: str = "http://localhost:8000"
+    scheduler_enabled: bool = True
+    max_sites: int = 10
+    max_users: int = 10
+    daily_event_limit: int = 5000
+    demo_enabled: bool = True
+    jwt_ttl_minutes: int = 120
+    alert_cooldown_s: int = 300
 
     @property
     def cors_origins(self) -> list[str]:

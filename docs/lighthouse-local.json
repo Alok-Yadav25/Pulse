@@ -1,0 +1,38 @@
+{
+  "scope": "Local production preview, Lighthouse default mobile throttling, three runs",
+  "runs": [
+    {
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp_ms": 1772,
+      "cls": 0,
+      "tbt_ms": 2
+    },
+    {
+      "scores": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp_ms": 1806,
+      "cls": 0,
+      "tbt_ms": 0
+    },
+    {
+      "scores": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp_ms": 1810,
+      "cls": 0,
+      "tbt_ms": 0
+    }
+  ]
+}

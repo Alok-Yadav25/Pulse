@@ -13,7 +13,7 @@ async def test_health_does_not_create_database_pool() -> None:
     ) as client:
         response = await client.get("/healthz")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "service": "pulse", "phase": 0}
+    assert response.json() == {"status": "ok", "service": "pulse"}
     assert get_engine.cache_info().currsize == 0
     assert response.headers["X-Content-Type-Options"] == "nosniff"
 
@@ -35,9 +35,9 @@ async def test_metadata_and_openapi_are_honest() -> None:
         response = await client.get("/api/meta")
         schema = await client.get("/openapi.json")
         absent = await client.get("/api/sites")
-    assert response.json()["capabilities"] == ["health", "openapi"]
+    assert "probes" in response.json()["capabilities"]
     assert schema.status_code == 200
-    assert absent.status_code == 404
+    assert absent.status_code == 401
     assert response.headers["strict-transport-security"] == "max-age=31536000"
 
 

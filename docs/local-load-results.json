@@ -1,0 +1,45 @@
+{
+  "environment": "Darwin arm64",
+  "scope": "Local diagnostic bursts; not a sustainable-capacity or Render free-tier benchmark",
+  "events_per_request": 3,
+  "runs": [
+    {
+      "target_requests_per_second": 1,
+      "duration_s": 10.001,
+      "requests": 10,
+      "accepted_events": 30,
+      "accepted_events_per_second": 3.0,
+      "p50_ms": 11.97,
+      "p95_ms": 18.62,
+      "status_codes": {
+        "202": 10
+      }
+    },
+    {
+      "target_requests_per_second": 2,
+      "duration_s": 10.0,
+      "requests": 20,
+      "accepted_events": 60,
+      "accepted_events_per_second": 6.0,
+      "p50_ms": 10.15,
+      "p95_ms": 28.01,
+      "status_codes": {
+        "202": 20
+      }
+    },
+    {
+      "target_requests_per_second": 4,
+      "duration_s": 10.0,
+      "requests": 40,
+      "accepted_events": 120,
+      "accepted_events_per_second": 12.0,
+      "p50_ms": 11.96,
+      "p95_ms": 19.46,
+      "status_codes": {
+        "202": 40
+      }
+    }
+  ],
+  "api_peak_rss_mib": 97.81,
+  "api_start_rss_mib": 55.3
+}

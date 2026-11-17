@@ -1,38 +1,9 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { Activity, ArrowDownLeft, ArrowUpRight, X } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { clsx } from "clsx";
-import type { Monitor } from "../lib/demo";
 
-export function Logo({ small = false }: { small?: boolean }) {
-  return (
-    <span className={clsx("brand", small && "small")}>
-      <span className="brand-mark">
-        <Activity size={23} strokeWidth={2.3} />
-      </span>
-      {!small && (
-        <span>
-          pulse<span className="brand-period">.</span>
-        </span>
-      )}
-    </span>
-  );
-}
-
-export function StatusDot({
-  status = "operational",
-  pulse = false,
-}: {
-  status?: Monitor["status"];
-  pulse?: boolean;
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      className={clsx("status-dot", status, pulse && "pulsing")}
-    />
-  );
-}
+export { Logo, StatusDot } from "./brand";
 
 export function Sparkline({
   values,
@@ -46,7 +17,7 @@ export function Sparkline({
   const path = values
     .map(
       (value, index) =>
-        `${index === 0 ? "M" : "L"}${(index / (values.length - 1)) * 160},${58 - value * 0.8}`,
+        `${index === 0 ? "M" : "L"}${(index / Math.max(1, values.length - 1)) * 160},${58 - value * 0.8}`,
     )
     .join(" ");
   return (
@@ -75,26 +46,49 @@ export function Sparkline({
 export function UptimeStrip({
   degraded = false,
   count = 60,
+  points,
 }: {
   degraded?: boolean;
   count?: number;
+  points?: { ts: string; ok?: boolean }[];
 }) {
   return (
     <div
       className="uptime-strip"
       aria-label={
-        degraded
-          ? "Demo history: one degraded interval"
-          : "Demo history: all intervals operational"
+        points
+          ? "Observed check history; inspect each interval for its result"
+          : degraded
+            ? "Demo history: one degraded interval"
+            : "Demo history: all intervals operational"
       }
     >
       {Array.from({ length: count }, (_, i) => (
         <span
           key={i}
           className={
-            degraded && i === Math.floor(count * 0.73) ? "warning-bar" : ""
+            points
+              ? !points.length
+                ? "unknown-bar"
+                : points[
+                      Math.min(
+                        points.length - 1,
+                        Math.floor((i / count) * points.length),
+                      )
+                    ].ok
+                  ? ""
+                  : "warning-bar"
+              : degraded && i === Math.floor(count * 0.73)
+                ? "warning-bar"
+                : ""
           }
-          title={`${count - i} intervals ago · ${degraded && i === Math.floor(count * 0.73) ? "Degraded performance" : "Operational"} (sample)`}
+          title={
+            points
+              ? points.length
+                ? `${new Date(points[Math.min(points.length - 1, Math.floor((i / count) * points.length))].ts).toLocaleString()} · ${points[Math.min(points.length - 1, Math.floor((i / count) * points.length))].ok ? "OK" : "Failed"}`
+                : "No observations"
+              : `${count - i} intervals ago (sample)`
+          }
         />
       ))}
     </div>

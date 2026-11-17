@@ -4,11 +4,27 @@ export type Monitor = {
   url: string;
   letter: string;
   color: string;
-  status: "operational" | "degraded" | "pending";
+  status: "operational" | "degraded" | "pending" | "down";
   uptime: string;
   latency: number;
   visitors: number;
   history: number[];
+  group?: string;
+  tags?: string[];
+  slug?: string;
+  site_key?: string;
+  interval_s?: number;
+  public_status?: boolean;
+  assertions?: {
+    status_codes: number[];
+    contains: string;
+    json_path: string;
+    equals: unknown;
+    max_ms: number;
+  };
+  last_checked_at?: string | null;
+  stale?: boolean;
+  demo?: boolean;
 };
 
 export type Range = "1h" | "24h" | "7d" | "30d";
@@ -106,7 +122,7 @@ export function validateSite(name: string, rawUrl: string): string | null {
       !["http:", "https:"].includes(url.protocol) ||
       url.username ||
       url.password ||
-      !url.hostname.includes(".") ||
+      (!url.hostname.includes(".") && !url.hostname.includes(":")) ||
       (url.port && !["80", "443", "8080", "8443"].includes(url.port))
     )
       return "Enter a public HTTP or HTTPS URL without credentials.";

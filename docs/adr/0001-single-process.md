@@ -1,7 +1,7 @@
 # ADR 0001: one API process
 
-Status: accepted for the scaffold.
+Status: accepted and implemented.
 
-The target is one free Render web service, without a paid background worker or Redis. All supplied start commands use exactly one uvicorn worker. The eventual scheduler, live counters, and SSE queues must live in that process. Multiple workers would create divergent in-memory counters and duplicate scheduled work.
+Pulse uses exactly one uvicorn worker. Its APScheduler jobs, bounded beacon buffer, live visitors, and SSE broker share that process. Multiple workers would duplicate scheduled checks and split live state. Durable configuration, incidents, counters, outbox deliveries and rollups remain in PostgreSQL. A lazy asyncpg pool has two connections and no overflow.
 
-The current phase implements health and metadata only. The database pool is created lazily and capped at two connections with no overflow. Scheduling and the event broker remain later-phase work. Service restarts will clear in-memory state; durable records must remain in Postgres. Sleep gaps must eventually be recorded rather than counted as target downtime.
+Heartbeat state detects service gaps after restarts. Unknown observation time reduces coverage rather than becoming target downtime. The external authenticated cron tick catches up bounded overdue work; it cannot reconstruct probes that never ran. Restarts discard live counters and any unflushed events. This design trades horizontal scale for a small deployment without Redis or a separate worker.

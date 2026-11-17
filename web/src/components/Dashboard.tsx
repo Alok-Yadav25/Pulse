@@ -1,6 +1,5 @@
 import { lazy, Suspense, useState } from "react";
 import {
-  ArrowDownLeft,
   ArrowRight,
   ArrowUpRight,
   ChevronDown,
@@ -9,6 +8,7 @@ import {
   ExternalLink,
   Globe2,
   MoreHorizontal,
+  Plus,
   Radio,
   ShieldCheck,
   Sparkles,
@@ -16,137 +16,119 @@ import {
   Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Sparkline, StatusDot, Trend, UptimeStrip } from "./ui";
+import { motion, useReducedMotion } from "framer-motion";
+import { Sparkline, StatusDot, UptimeStrip } from "./ui";
+import { useWorkspace } from "../lib/workspace";
+import { formatNumber } from "../lib/workspace-data";
 import type { Monitor, Range } from "../lib/demo";
 import { rangeLabels } from "../lib/demo";
-
 const LatencyChart = lazy(() => import("./LatencyChart"));
-const metricSparks = [
-  [
-    28, 30, 27, 30, 25, 31, 29, 32, 30, 31, 28, 32, 30, 34, 31, 35, 32, 36, 33,
-    37,
-  ],
-  [
-    23, 27, 22, 37, 30, 44, 37, 39, 29, 35, 24, 30, 22, 28, 21, 29, 19, 23, 17,
-    20,
-  ],
-  [
-    13, 20, 17, 24, 21, 32, 24, 31, 25, 39, 33, 43, 36, 44, 40, 50, 45, 52, 48,
-    54,
-  ],
-  [
-    18, 16, 27, 23, 32, 27, 36, 30, 39, 34, 43, 36, 49, 43, 50, 42, 52, 46, 54,
-    51,
-  ],
-];
 
 export function MetricCards({
   range,
-  activeCount,
+  siteId,
 }: {
   range: Range;
-  activeCount: number;
+  siteId?: string;
+  activeCount?: number;
 }) {
+  const reduce = useReducedMotion();
+  const workspace = useWorkspace(),
+    summary = workspace.summary(siteId),
+    traffic = workspace.traffic(siteId);
   const metrics = [
     {
-      label: "Overall uptime",
-      value: "99.95",
-      unit: "%",
+      label: "Observed uptime",
+      value: formatNumber(summary.uptime, 2),
+      unit: summary.uptime == null ? "" : "%",
       icon: ShieldCheck,
-      change: "0.03%",
-      note: "vs. previous period",
-      spark: metricSparks[0],
       tone: "mint",
+      note: `${formatNumber(summary.coverage, 1)}% monitoring coverage`,
     },
     {
-      label: "Avg. response time",
-      value:
-        range === "1h"
-          ? "132"
-          : range === "7d"
-            ? "158"
-            : range === "30d"
-              ? "171"
-              : "142",
-      unit: "ms",
+      label: "Response time · p95",
+      value: formatNumber(summary.p95),
+      unit: summary.p95 == null ? "" : "ms",
       icon: Zap,
-      change: "12.4%",
-      note: "vs. previous period",
-      spark: metricSparks[1],
       tone: "blue",
-      down: true,
+      note: `p50 ${formatNumber(summary.p50)} · p99 ${formatNumber(summary.p99)} ms`,
     },
     {
       label: "Active visitors",
-      value: activeCount.toString(),
+      value: formatNumber(traffic.active_visitors),
       unit: "",
       icon: Users,
-      change: "18.2%",
-      note: "sample active visitors",
-      spark: metricSparks[2],
       tone: "purple",
+      note: "Seen in the last 60 seconds",
     },
     {
-      label: "Total page views",
-      value:
-        range === "1h"
-          ? "1,284"
-          : range === "7d"
-            ? "158,624"
-            : range === "30d"
-              ? "684,120"
-              : "24,892",
+      label: "Page views",
+      value: formatNumber(traffic.page_views),
       unit: "",
       icon: Globe2,
-      change: "8.6%",
-      note: "vs. previous period",
-      spark: metricSparks[3],
       tone: "peach",
+      note: rangeLabels[range],
     },
   ];
   return (
     <div className="metrics-grid">
-      {metrics.map(
-        (
-          { label, value, unit, icon: Icon, change, note, spark, tone, down },
-          index,
-        ) => (
-          <motion.article
-            className={`metric-card ${tone}`}
-            key={label}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.055, duration: 0.35 }}
-          >
-            <div className="metric-label">
-              {label}
-              <span className="metric-icon">
-                <Icon size={15} />
-              </span>
+      {metrics.map(({ label, value, unit, icon: Icon, tone, note }, i) => (
+        <motion.article
+          key={label}
+          className={`metric-card ${tone}`}
+          initial={reduce ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.04, duration: 0.25 }}
+        >
+          <div className="metric-label">
+            {label}
+            <span className="metric-icon">
+              <Icon size={15} />
+            </span>
+          </div>
+          <div className="metric-value-row">
+            <div className="metric-value mono" key={value}>
+              {value}
+              <span>{unit}</span>
             </div>
-            <div className="metric-value-row">
-              <div className="metric-value mono" key={value}>
-                {value}
-                <span>{unit}</span>
-              </div>
-              <div className="metric-spark">
-                <Sparkline values={spark} color={`var(--${tone})`} filled />
-              </div>
+            <div className="metric-spark">
+              <Sparkline
+                values={summary.chart
+                  .slice(-22)
+                  .map((p) =>
+                    Math.min(
+                      55,
+                      10 + (p.total_ms / Math.max(1, summary.p99 || 1)) * 35,
+                    ),
+                  )}
+                color={`var(--${tone})`}
+                filled
+              />
             </div>
-            <div className="metric-foot">
-              <Trend down={down}>{change}</Trend>
-              <span>{note}</span>
-            </div>
-          </motion.article>
-        ),
-      )}
+          </div>
+          <div className="metric-foot">
+            <span>{note}</span>
+          </div>
+        </motion.article>
+      ))}
     </div>
   );
 }
 
-export function PerformancePanel({ range }: { range: Range }) {
-  const [percentile, setPercentile] = useState<"p50" | "p95" | "p99">("p95");
+export function PerformancePanel({
+  range,
+  siteId,
+  markers = [],
+}: {
+  range: Range;
+  siteId?: string;
+  markers?: { ts: string; version: string }[];
+}) {
+  const workspace = useWorkspace(),
+    summary = workspace.summary(siteId);
+  const [percentile, setPercentile] = useState<"p50" | "p95" | "p99">("p95"),
+    [breakdown, setBreakdown] = useState(false),
+    [table, setTable] = useState(false);
   return (
     <section className="panel performance-panel">
       <div className="panel-heading">
@@ -154,21 +136,25 @@ export function PerformancePanel({ range }: { range: Range }) {
           <h2>
             Response time <span className="unit-label">ms</span>
           </h2>
-          <p>A little faster. A lot more peace of mind.</p>
+          <p>
+            {summary.count} observations · {rangeLabels[range]}
+          </p>
         </div>
-        <div className="chart-legend">
-          <span className="legend-dot" />
-          Response time
-        </div>
+        <button
+          className="text-button"
+          onClick={() => setBreakdown((v) => !v)}
+          aria-pressed={breakdown}
+        >
+          {breakdown ? "Total response" : "Phase breakdown"}
+        </button>
       </div>
       <div className="chart-summary">
         <div className="chart-number mono">
-          {percentile === "p50" ? "104" : percentile === "p99" ? "246" : "186"}
-          <span>ms</span>
+          {formatNumber(summary[percentile])}
+          <span>{summary[percentile] == null ? "" : "ms"}</span>
         </div>
         <span className="chart-change">
-          <ArrowDownLeft size={13} />
-          12.4% <span>vs. previous period</span>
+          Apdex {formatNumber(summary.apdex, 2)}
         </span>
         <div
           className="segmented percentile-control"
@@ -178,40 +164,98 @@ export function PerformancePanel({ range }: { range: Range }) {
             <button
               key={p}
               onClick={() => setPercentile(p)}
-              className={percentile === p ? "selected" : ""}
               aria-pressed={percentile === p}
+              className={percentile === p ? "selected" : ""}
             >
               {p}
             </button>
           ))}
         </div>
       </div>
-      <Suspense
-        fallback={<div className="chart-skeleton" aria-label="Loading chart" />}
-      >
-        <LatencyChart range={range} percentile={percentile} />
+      <Suspense fallback={<div className="chart-skeleton" />}>
+        <LatencyChart
+          range={range}
+          percentile={percentile}
+          siteId={siteId}
+          breakdown={breakdown}
+          markers={markers}
+        />
       </Suspense>
       <div className="chart-footer">
         <span>
           <span className="tiny-dot" />
-          All 4 demo monitors
+          {workspace.mode === "sample"
+            ? "Sample data"
+            : "Observed checks"} ·{" "}
+          {siteId
+            ? workspace.monitors.find((m) => m.id === siteId)?.name
+            : `${workspace.monitors.length} monitors`}
         </span>
-        <span>Sample data · {rangeLabels[range]}</span>
+        <button
+          onClick={() => setTable((v) => !v)}
+          className="text-button"
+          aria-expanded={table}
+        >
+          View chart data
+        </button>
       </div>
+      {summary.history_limited && (
+        <p className="section-note inline-note">
+          Older history uses completed hourly rollups. Partial boundary buckets
+          can be absent; coverage makes the missing time explicit.
+        </p>
+      )}
+      {table && (
+        <div className="monitor-table-scroll chart-data-table">
+          <table className="monitor-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>DNS</th>
+                <th>TCP</th>
+                <th>TLS</th>
+                <th>TTFB</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summary.chart.slice(-100).map((p, i) => (
+                <tr key={i}>
+                  <td>{new Date(p.ts).toLocaleString()}</td>
+                  <td>{p.ok ? "OK" : "Failed"}</td>
+                  {[p.total_ms, p.dns_ms, p.tcp_ms, p.tls_ms, p.ttfb_ms].map(
+                    (v, j) => (
+                      <td key={j}>{formatNumber(v, 1)}</td>
+                    ),
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }
 
 export function HealthPanel({ monitors }: { monitors: Monitor[] }) {
-  const up = monitors.filter((m) => m.status === "operational").length;
-  const degraded = monitors.filter((m) => m.status === "degraded").length;
+  const workspace = useWorkspace(),
+    down = monitors.filter((m) => m.status === "down").length,
+    degraded = monitors.filter((m) => m.status === "degraded").length,
+    up = monitors.filter((m) => m.status === "operational").length,
+    stale = monitors.filter((m) => workspace.summary(m.id).stale).length;
   return (
     <section className="panel health-panel">
       <div className="panel-heading">
         <h2>System health</h2>
         <span className="health-status">
-          <StatusDot pulse />
-          Demo
+          <StatusDot status={down ? "down" : "operational"} pulse />
+          {workspace.mode === "sample"
+            ? "Sample"
+            : workspace.liveConnected
+              ? "Live"
+              : "Polling"}
         </span>
       </div>
       <div className="health-orbit">
@@ -223,14 +267,23 @@ export function HealthPanel({ monitors }: { monitors: Monitor[] }) {
         </div>
         <span className="orbit-speck one" />
         <span className="orbit-speck two" />
-        <span className="orbit-speck three" />
       </div>
       <div className="health-message">
-        <h3>{degraded ? "Looking good overall" : "All systems look good"}</h3>
+        <h3>
+          {down
+            ? `${down} monitor${down > 1 ? "s are" : " is"} down`
+            : stale
+              ? "Waiting for fresh signals"
+              : degraded
+                ? "Looking good overall"
+                : "All observed systems look good"}
+        </h3>
         <p>
-          {degraded
-            ? `${degraded} monitor needs a little attention.`
-            : "Your demo workspace is healthy."}
+          {stale
+            ? `${stale} monitor${stale > 1 ? "s have" : " has"} stale or missing coverage.`
+            : degraded
+              ? `${degraded} monitor needs attention.`
+              : "No active outage signals."}
         </p>
       </div>
       <div className="health-breakdown">
@@ -243,12 +296,12 @@ export function HealthPanel({ monitors }: { monitors: Monitor[] }) {
           Degraded<strong className="mono">{degraded}</strong>
         </span>
         <span>
-          <span className="status-dot down" />
-          Down<strong className="mono">0</strong>
+          <StatusDot status="down" />
+          Down<strong className="mono">{down}</strong>
         </span>
       </div>
-      <Link to="/status/acme" className="health-link">
-        View status page
+      <Link to="/status-pages" className="health-link">
+        View status pages
         <ArrowUpRight size={14} />
       </Link>
     </section>
@@ -264,10 +317,18 @@ export function MonitorsPanel({
   onAdd: () => void;
   expanded?: boolean;
 }) {
-  const [filter, setFilter] = useState<
-    "all" | "operational" | "degraded" | "pending"
-  >("all");
-  const shown = monitors.filter((m) => filter === "all" || m.status === filter);
+  const workspace = useWorkspace();
+  const [filter, setFilter] = useState("all"),
+    [group, setGroup] = useState("all"),
+    [tag, setTag] = useState("all");
+  const shown = monitors.filter(
+    (m) =>
+      (filter === "all" || m.status === filter) &&
+      (group === "all" || (m.group || "Production") === group) &&
+      (tag === "all" || m.tags?.includes(tag)),
+  );
+  const groups = [...new Set(monitors.map((m) => m.group || "Production"))],
+    tags = [...new Set(monitors.flatMap((m) => m.tags || []))];
   return (
     <section className="panel monitors-panel">
       <div className="panel-heading">
@@ -280,19 +341,22 @@ export function MonitorsPanel({
             <select
               aria-label="Filter monitors by status"
               value={filter}
-              onChange={(e) => setFilter(e.target.value as typeof filter)}
+              onChange={(e) => setFilter(e.target.value)}
             >
-              <option value="all">All statuses</option>
-              <option value="operational">Operational</option>
-              <option value="degraded">Degraded</option>
-              <option value="pending">Pending</option>
+              {["all", "operational", "degraded", "down", "pending"].map(
+                (v) => (
+                  <option key={v} value={v}>
+                    {v === "all" ? "All statuses" : v}
+                  </option>
+                ),
+              )}
             </select>
             <ChevronDown size={12} />
           </label>
           {expanded ? (
             <button className="text-button" onClick={onAdd}>
               Add monitor
-              <ArrowRight size={13} />
+              <Plus size={13} />
             </button>
           ) : (
             <Link className="text-button" to="/monitors">
@@ -302,6 +366,28 @@ export function MonitorsPanel({
           )}
         </div>
       </div>
+      {expanded && (
+        <div className="monitor-filters">
+          <label>
+            Group
+            <select value={group} onChange={(e) => setGroup(e.target.value)}>
+              <option value="all">All groups</option>
+              {groups.map((v) => (
+                <option key={v}>{v}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Tag
+            <select value={tag} onChange={(e) => setTag(e.target.value)}>
+              <option value="all">All tags</option>
+              {tags.map((v) => (
+                <option key={v}>{v}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
       <div className="monitor-table-scroll">
         <table className="monitor-table">
           <thead>
@@ -309,9 +395,9 @@ export function MonitorsPanel({
               <th>Monitor</th>
               <th>Status</th>
               <th>
-                Uptime <span>24h</span>
+                Uptime <span>{workspace.range}</span>
               </th>
-              <th>Response time</th>
+              <th>p95 response</th>
               <th>Visitors</th>
               <th>
                 <span className="sr-only">Details</span>
@@ -319,106 +405,114 @@ export function MonitorsPanel({
             </tr>
           </thead>
           <tbody>
-            {shown.map((m) => (
-              <tr key={m.id}>
-                <td>
-                  <Link to={`/monitors/${m.id}`} className="monitor-identity">
-                    <span
-                      className="site-avatar"
-                      style={{ "--site-color": m.color } as React.CSSProperties}
-                    >
-                      {m.letter}
-                    </span>
-                    <span>
-                      <strong>{m.name}</strong>
-                      <span className="monitor-url">
-                        {m.url}
-                        <ExternalLink size={10} />
+            {shown.map((m) => {
+              const s = workspace.summary(m.id),
+                traffic = workspace.traffic(m.id);
+              return (
+                <tr key={m.id}>
+                  <td>
+                    <Link to={`/monitors/${m.id}`} className="monitor-identity">
+                      <span
+                        className="site-avatar"
+                        style={
+                          { "--site-color": m.color } as React.CSSProperties
+                        }
+                      >
+                        {m.letter}
                       </span>
-                    </span>
-                  </Link>
-                </td>
-                <td>
-                  <span className={`status-label ${m.status}`}>
-                    <StatusDot status={m.status} />
-                    {m.status === "pending"
-                      ? "Pending setup"
-                      : m.status === "operational"
-                        ? "Operational"
-                        : "Degraded"}
-                  </span>
-                </td>
-                <td>
-                  <div className="uptime-cell">
-                    <strong className="mono">
-                      {m.uptime}
-                      {m.status !== "pending" && "%"}
-                    </strong>
-                    {m.status !== "pending" && (
-                      <UptimeStrip
-                        degraded={m.status === "degraded"}
-                        count={36}
-                      />
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <div className="response-cell">
-                    <span className="mono">
-                      {m.status === "pending" ? "—" : m.latency}
-                      <span className="muted">
-                        {m.status !== "pending" && " ms"}
+                      <span>
+                        <strong>{m.name}</strong>
+                        <span className="monitor-url" title={m.url}>
+                          {m.url.replace(/^https?:\/\//, "")}
+                          <ExternalLink size={10} />
+                        </span>
+                        <span className="monitor-group">
+                          {m.group || "Production"}
+                          {m.tags?.length ? ` · ${m.tags.join(", ")}` : ""}
+                        </span>
                       </span>
+                    </Link>
+                  </td>
+                  <td>
+                    <span className={`status-label ${m.status}`}>
+                      <StatusDot status={m.status} />
+                      {s.maintenance
+                        ? "Maintenance"
+                        : s.stale
+                          ? "Awaiting checks"
+                          : m.status === "pending"
+                            ? "Pending"
+                            : m.status === "down"
+                              ? "Down"
+                              : m.status === "degraded"
+                                ? "Degraded"
+                                : "Operational"}
                     </span>
-                    {m.status !== "pending" && (
+                  </td>
+                  <td>
+                    <div className="uptime-cell">
+                      <strong className="mono">
+                        {formatNumber(s.uptime, 2)}
+                        {s.uptime != null ? "%" : ""}
+                      </strong>
+                      <UptimeStrip points={s.chart} count={36} />
+                    </div>
+                  </td>
+                  <td>
+                    <div className="response-cell">
+                      <span className="mono">
+                        {formatNumber(s.p95)}
+                        <span className="muted">
+                          {s.p95 != null ? " ms" : ""}
+                        </span>
+                      </span>
                       <Sparkline
-                        values={m.history}
+                        values={s.chart
+                          .slice(-22)
+                          .map(
+                            (p) =>
+                              10 + (p.total_ms / Math.max(1, s.p99 || 1)) * 35,
+                          )}
                         color={
-                          m.status === "degraded"
-                            ? "var(--warning)"
-                            : "var(--green)"
+                          m.status === "down"
+                            ? "var(--down)"
+                            : m.status === "degraded"
+                              ? "var(--warning)"
+                              : "var(--green)"
                         }
                       />
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <span className="visitor-count mono">
-                    {m.status === "pending" ? (
-                      "—"
-                    ) : m.visitors === 0 ? (
-                      "—"
-                    ) : (
-                      <>
-                        <span className="tiny-dot" />
-                        {m.visitors}
-                      </>
-                    )}
-                  </span>
-                </td>
-                <td>
-                  <Link
-                    to={`/monitors/${m.id}`}
-                    className="icon-button"
-                    aria-label={`View ${m.name}`}
-                  >
-                    <MoreHorizontal size={17} />
-                  </Link>
-                </td>
-              </tr>
-            ))}
+                    </div>
+                  </td>
+                  <td>
+                    <span className="visitor-count mono">
+                      <span className="tiny-dot" />
+                      {traffic.active_visitors}
+                    </span>
+                  </td>
+                  <td>
+                    <Link
+                      to={`/monitors/${m.id}`}
+                      className="icon-button"
+                      aria-label={`View ${m.name}`}
+                    >
+                      <MoreHorizontal size={17} />
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-        {shown.length === 0 && (
-          <div className="table-empty">
-            No {filter} monitors in this workspace.
-          </div>
+        {!shown.length && (
+          <div className="table-empty">No monitors match these filters.</div>
         )}
       </div>
       <div className="monitor-table-footer">
         <span>
           <Clock3 size={12} />
-          60-second checks planned · sample history
+          {workspace.mode === "sample"
+            ? "Sample history · connect a live workspace to start checks"
+            : "Timed probes · missing coverage is never site downtime"}
         </span>
         <Link to="/docs">
           How monitoring works
@@ -430,83 +524,84 @@ export function MonitorsPanel({
 }
 
 export function ActivityPanel() {
+  const workspace = useWorkspace();
   return (
     <section className="panel activity-panel">
       <div className="panel-heading">
-        <h2>Recent activity</h2>
-        <Link to="/incidents" className="text-button">
+        <h2>Recent incidents</h2>
+        <Link className="text-button" to="/incidents">
           All activity
           <ArrowRight size={13} />
         </Link>
       </div>
       <div className="activity-list">
-        <div className="activity-item">
-          <span className="activity-icon warning">
-            <Zap size={15} />
-          </span>
-          <div>
-            <p>
-              Response time elevated{" "}
-              <span className="activity-tag">Performance</span>
-            </p>
-            <span>
-              Acme store <span className="separator">·</span> p95 reached 684 ms
+        {workspace.incidents.slice(0, 3).map((i) => (
+          <Link
+            to={`/monitors/${i.site_id}?tab=Incidents`}
+            className="activity-item"
+            key={i.id}
+          >
+            <span
+              className={`activity-icon ${i.resolved_at ? "success" : "warning"}`}
+            >
+              {i.resolved_at ? <CircleCheck size={15} /> : <Zap size={15} />}
             </span>
-          </div>
-          <time>12 min ago</time>
-        </div>
-        <div className="activity-item">
-          <span className="activity-icon success">
-            <CircleCheck size={15} />
-          </span>
-          <div>
-            <p>
-              Back to business as usual{" "}
-              <span className="activity-tag">Resolved</span>
-            </p>
-            <span>
-              Production API <span className="separator">·</span> Incident
-              lasted 2 min
-            </span>
-          </div>
-          <time>2 hours ago</time>
-        </div>
+            <div>
+              <p>
+                {i.resolved_at
+                  ? "Service recovered"
+                  : i.cause.replaceAll("_", " ")}
+              </p>
+              <span>
+                {workspace.monitors.find((m) => m.id === i.site_id)?.name} ·{" "}
+                {formatNumber(i.peak_latency_ms)} ms peak
+              </span>
+            </div>
+            <time>
+              {new Date(i.started_at).toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </time>
+          </Link>
+        ))}
+        {!workspace.incidents.length && (
+          <p className="table-empty">No incidents recorded.</p>
+        )}
       </div>
     </section>
   );
 }
-
 export function InsightPanel() {
+  const workspace = useWorkspace(),
+    s = workspace.summary();
   return (
     <section className="insight-panel">
       <div className="insight-icon">
-        <Sparkles size={20} strokeWidth={1.4} />
+        <Sparkles size={20} />
       </div>
       <div>
-        <span className="eyebrow">A LITTLE INSIGHT</span>
-        <h2>Your site is getting faster.</h2>
+        <span className="eyebrow">SIGNALS WITH CONTEXT</span>
+        <h2>
+          {s.insight ? "A change worth a look." : "Know what was observed."}
+        </h2>
         <p>
-          Acme’s p95 response time improved by 12.4% in this sample period.
-          Small wins add up.
+          {s.insight?.message ||
+            `${formatNumber(s.coverage, 1)}% monitoring coverage in this period. Gaps and maintenance are excluded from site availability.`}
         </p>
-        <Link to="/monitors/acme">
-          Explore performance
+        <Link to="/monitors">
+          Explore your monitors
           <ArrowUpRight size={14} />
         </Link>
       </div>
       <div className="insight-decoration" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-        <span />
-        <span />
-        <span />
-        <span />
+        {Array.from({ length: 7 }, (_, i) => (
+          <span key={i} />
+        ))}
       </div>
     </section>
   );
 }
-
 export default function Dashboard({
   range,
   monitors,
@@ -516,9 +611,10 @@ export default function Dashboard({
   monitors: Monitor[];
   onAdd: () => void;
 }) {
+  const workspace = useWorkspace();
   return (
     <>
-      <MetricCards range={range} activeCount={242} />
+      <MetricCards range={range} />
       <div className="chart-grid">
         <PerformancePanel range={range} />
         <HealthPanel monitors={monitors} />
@@ -531,11 +627,14 @@ export default function Dashboard({
       <div className="workspace-footnote">
         <span>
           <Radio size={12} />
-          Demo workspace · illustrative data, no live probes
+          {workspace.mode === "sample"
+            ? "Illustrative sample data"
+            : workspace.liveConnected
+              ? "Live events connected"
+              : "Live events reconnecting · polling every 30 seconds"}
         </span>
         <span>
-          Made for a little more peace of mind.
-          <span className="mini-brand">✳</span>
+          Every signal, with context.<span className="mini-brand">✳</span>
         </span>
       </div>
     </>

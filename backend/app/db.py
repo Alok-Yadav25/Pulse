@@ -39,7 +39,13 @@ def get_engine() -> AsyncEngine:
         pool_size=2,
         max_overflow=0,
         pool_pre_ping=True,
-        connect_args={"statement_cache_size": 0},
+        pool_timeout=5,
+        connect_args={
+            "statement_cache_size": 0,
+            "prepared_statement_cache_size": 0,
+            "timeout": 5,
+            "command_timeout": 10,
+        },
     )
 
 

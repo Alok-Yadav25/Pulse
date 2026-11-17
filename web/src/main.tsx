@@ -1,24 +1,30 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MotionConfig } from "framer-motion";
-import "@fontsource/jetbrains-mono/latin-400.css";
-import App from "./App";
-import "./styles.css";
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
-});
-
+import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
+import Landing from "./components/Landing";
+import "./base.css";
+const DashboardRoot = lazy(() => import("./DashboardRoot"));
+export function Entry() {
+  const location = useLocation(),
+    navigate = useNavigate();
+  return location.pathname === "/welcome" ? (
+    <Landing onAdd={() => navigate("/?add=1")} />
+  ) : (
+    <Suspense
+      fallback={
+        <div className="boot-loading" role="status">
+          Connecting your workspace…
+        </div>
+      }
+    >
+      <DashboardRoot />
+    </Suspense>
+  );
+}
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <MotionConfig reducedMotion="user">
-          <App />
-        </MotionConfig>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <Entry />
+    </BrowserRouter>
   </React.StrictMode>,
 );

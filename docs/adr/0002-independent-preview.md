@@ -1,7 +1,7 @@
-# ADR 0002: an independent, clearly labeled preview
+# ADR 0002: explicit sample and live workspaces
 
-Status: accepted for phase 0 design review.
+Status: accepted and implemented.
 
-The UI must load immediately even when a free API service is asleep. Phase 0 renders deterministic sample data directly in the frontend. Every analytics screen and status preview labels its data as illustrative. Added monitors remain pending and are stored only in this browser. No simulated live updates or random uptime claims are emitted.
+The static introduction and sample workspace render without waiting for an API. Deterministic per-site samples are visibly labeled. Browser-local sample monitors preserve the complete URL and remain pending; they never issue a probe.
 
-This allows review of the product direction while the security boundary and probe implementation are built in later phases. It does not demonstrate live monitoring. Future API hooks must use cached snapshots and an explicit waking state; they must not silently fall back to samples after a network error.
+Live authentication selects owner-scoped server queries and session cache. Loading, waking, stale snapshot and error states are explicit. A live request failure never substitutes sample analytics. Logging out clears private query/cache state. The reserved /status/acme page remains illustrative regardless of the current live account. Real public status pages expose only opted-in monitor data.

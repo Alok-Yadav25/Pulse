@@ -2,11 +2,12 @@
 
 import asyncio
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from alembic import context
+import app.models  # noqa: F401
 from app.config import get_settings
 from app.db import Base, async_database_url
 
@@ -38,7 +39,7 @@ async def run_migrations_online() -> None:
         {"sqlalchemy.url": async_database_url(get_settings().database_url)},
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
-        connect_args={"statement_cache_size": 0},
+        connect_args={"statement_cache_size": 0, "prepared_statement_cache_size": 0},
     )
     async with engine.connect() as connection:
         await connection.run_sync(configure_connection)

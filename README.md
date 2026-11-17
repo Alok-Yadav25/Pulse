@@ -1,49 +1,33 @@
 # Pulse
 
-A quieter workspace for website uptime, performance, and visitors.
+Website health, performance, and privacy-conscious visitor analytics in a calm, responsive workspace.
 
-**Current state: phase 0 review preview.** The React interface is interactive and all monitoring numbers are illustrative. The FastAPI service exposes health and capability metadata. Live probes, accounts, ingestion, incidents, and analytics are not implemented yet. No production deployment has been performed.
+**Working locally:** FastAPI + PostgreSQL + React/Vite. Live mode includes timed public-URL probes, confirmed incidents, authenticated SSE, tracker ingestion, analytics, public status pages and badges, maintenance windows, release markers, assertions, grouped Slack/Discord/Telegram/webhook alerts, and incident reports. Sample mode is explicit and never replaces live data after an API error. No external deployment has been performed, as requested.
 
-Design previews: [dark dashboard](docs/previews/dashboard-dark.png) · [light dashboard](docs/previews/dashboard-light.png) · [landing](docs/previews/landing.png) · [mobile](docs/previews/dashboard-mobile.png) · [status page](docs/previews/status.png).
+[Dashboard](docs/previews/dashboard-dark.png) · [Light theme](docs/previews/dashboard-light.png) · [Landing](docs/previews/landing.png) · [Mobile](docs/previews/dashboard-mobile.png)
 
-## Run locally
+## Run everything locally
 
-Requires Node 22 and Python 3.12. For the dashboard:
-
-```sh
-cd web
-npm ci
-npm run dev
-```
-
-Open **http://localhost:5173**. The introduction is at `/welcome`; the sample public status page is at `/status/acme`.
-
-For the API in another terminal:
+Requires **Python 3.12 and Node 22**:
 
 ```sh
-cd backend
-python3.12 -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
-uvicorn app.main:app --port 8000 --workers 1 --no-access-log
+python3 scripts/dev.py
 ```
 
-Health: http://localhost:8000/healthz. OpenAPI: http://localhost:8000/docs. Neither dashboard rendering nor health requires a running database.
+Or `npm run dev:all` from the repository root. The helper bootstraps missing dependencies, runs a native local Postgres process, applies migrations, and starts exactly one API worker plus Vite. Postgres files persist in `.local/postgres`; development secrets live in ignored environment configuration. Ctrl+C shuts down the owned services. No Docker account or cloud credentials are required.
 
-With Docker Compose installed, `docker compose up --build` runs the web app, one API worker, and Postgres. This configuration has not been exercised locally because Docker is unavailable in the current environment.
+- App: **http://localhost:5173**
+- Introduction: **http://localhost:5173/welcome**
+- API explorer: **http://localhost:8000/docs**
+- Cheap liveness: `/healthz`; configuration and database readiness: `/readyz`.
 
-## Explore the preview
+Click **Connect live → Create account** to save real monitors. Add the complete URL, including any endpoint path and query. Configure tags, groups, response assertions, public status, alerts, maintenance, releases, and the tracker in its settings.
 
-- View sample uptime, latency percentiles, traffic, vitals, and incidents.
-- Change time ranges and percentiles, filter monitors, or inspect a monitor.
-- Add a local monitor, reload to verify persistence, and delete it in monitor settings. Added monitors honestly remain **pending setup**.
-- Use **Ctrl/⌘ K** or `/` to search; **G then D** opens the overview; `?` shows shortcuts.
-- Switch between dark and light themes; update the local workspace name.
-- Export explicitly labeled sample data as JSON and copy the sample status-page link.
+**Connect live → Try the live chaos demo** creates a read-only controlled monitor. **Break it** causes a bounded 45-second failure. Three failed checks open an incident; two successes close it. The demo uses a controlled in-process target, not a probe to an arbitrary private address.
 
-Seeded demo monitors are read-only. There is no account registration, automatic beacon collection, or background website probing in this phase. The tracker snippet is an example only.
+The sample workspace remains available without an API. Sample-only monitors are stored in the browser and do not issue probes. `/status/acme` is a reserved illustrative page; real public pages use the slug returned for each opted-in monitor.
 
-## Checks
+## Verify
 
 ```sh
 cd web
@@ -52,16 +36,22 @@ npm test
 npm run build
 npx playwright install chromium
 npm run test:smoke
+npm run test:lighthouse
 ```
+
+Browser tests require a running Postgres schema and environment secrets. The full local helper supplies an API; for isolated testing, point `BROWSER_DATABASE_URL` at a **disposable database with migrations already applied** and stop an existing API before starting the test runner. CI provisions isolated Postgres instances automatically. Lighthouse needs Chrome/Chromium; set `CHROME_PATH` if it is not discovered.
 
 ```sh
 cd backend
 source .venv/bin/activate
 ruff check .
-pytest -q
-alembic upgrade head --sql
+TEST_DATABASE_URL='postgresql+asyncpg://…/pulse_test' pytest -q
 ```
 
-The build enforces a 200 KiB gzip budget for initial JavaScript. Charts and secondary pages are lazy-loaded. CI also exercises online migrations against Postgres. Remote CI success is not claimed until this repository is pushed and the workflow runs.
+Integration tests reset only the explicitly provided disposable test database; without TEST_DATABASE_URL those tests skip. CI checks migrations up/down/up against a fresh Postgres service. See [measured local results](docs/PERFORMANCE.md), [security boundaries](docs/SECURITY.md), and [storage limits](docs/STORAGE.md).
 
-See [DEPLOY.md](DEPLOY.md), [architecture](docs/ARCHITECTURE.md), [current verification](docs/PERFORMANCE.md), and [security scope](docs/SECURITY.md). Phase 1 starts only after review, as requested in the brief.
+## Honest limits
+
+One process, at most 10 real monitors across this free-tier-oriented deployment, 10 accounts, 50 SSE clients, and 5,000 accepted tracker events per site per UTC day by default. Live visitor counters and the 2-second beacon buffer are ephemeral. No multi-region probing or production capacity claim is made. Historical traffic dimensions are compacted; unique visitor sums beyond raw retention are approximate. Tracker INP is an estimate over at most 500 recent interactions. Profiles use local rules; no LLM request is made.
+
+Docker Compose and future Render/Cloudflare manifests are included, but Docker execution and hosted behavior have not been verified in this environment. [DEPLOY.md](DEPLOY.md) separates local setup from optional future deployment.

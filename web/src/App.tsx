@@ -36,8 +36,13 @@ import { Command } from "cmdk";
 import { AnimatePresence, motion } from "framer-motion";
 import Dashboard, { MonitorsPanel } from "./components/Dashboard";
 import { Logo, Modal, StatusDot } from "./components/ui";
-import { demoMonitors, readSavedMonitors, validateSite } from "./lib/demo";
-import type { Monitor, Range } from "./lib/demo";
+import { validateSite } from "./lib/demo";
+import { useWorkspace } from "./lib/workspace";
+import { readStorage, saveStorage } from "./lib/storage";
+import "./styles.css";
+import AuthModal from "./components/AuthModal";
+import { api } from "./lib/api";
+import { Radio as RadioIcon } from "lucide-react";
 
 const OtherPages = lazy(() => import("./components/OtherPages"));
 
@@ -52,21 +57,31 @@ const navigation = [
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [range, setRange] = useState<Range>("24h");
-  const [savedMonitors, setSavedMonitors] =
-    useState<Monitor[]>(readSavedMonitors);
-  const monitors = [...demoMonitors, ...savedMonitors];
-  const [addOpen, setAddOpen] = useState(false);
+  const workspace = useWorkspace();
+  const { range, setRange, monitors } = workspace;
+  const [authOpen, setAuthOpen] = useState(false);
+  const [waking, setWaking] = useState(false);
+  useEffect(() => {
+    if (!workspace.refreshing) {
+      setWaking(false);
+      return;
+    }
+    const timer = setTimeout(() => setWaking(true), 2000);
+    return () => clearTimeout(timer);
+  }, [workspace.refreshing]);
+  const [addOpen, setAddOpen] = useState(() =>
+    new URLSearchParams(location.search).has("add"),
+  );
   const [commandOpen, setCommandOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [light, setLight] = useState(
-    () => localStorage.getItem("pulse-theme") === "light",
+    () => readStorage("pulse-theme") === "light",
   );
   const [workspaceName, setWorkspaceName] = useState(
-    () => localStorage.getItem("pulse-workspace") || "Acme workspace",
+    () => readStorage("pulse-workspace") || "Acme workspace",
   );
 
   const notify = useCallback((message: string) => setToast(message), []);
@@ -78,7 +93,7 @@ function App() {
   }, [toast]);
   useEffect(() => {
     document.documentElement.dataset.theme = light ? "light" : "dark";
-    localStorage.setItem("pulse-theme", light ? "light" : "dark");
+    saveStorage("pulse-theme", light ? "light" : "dark");
   }, [light]);
   useEffect(() => {
     setMobileOpen(false);
@@ -117,6 +132,40 @@ function App() {
     return () => window.removeEventListener("keydown", handler);
   }, [navigate, addOpen, commandOpen, helpOpen, notificationsOpen]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const sidebar = document.querySelector<HTMLElement>(".sidebar");
+    sidebar?.querySelector<HTMLButtonElement>(".mobile-close")?.focus();
+    const trap = (event: KeyboardEvent) => {
+      if (!sidebar?.contains(event.target as Node)) return;
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const items = Array.from(
+        sidebar.querySelectorAll<HTMLElement>("a,button,select,input"),
+      ).filter(
+        (el) =>
+          el.getBoundingClientRect().width > 0 &&
+          getComputedStyle(el).visibility !== "hidden",
+      );
+      if (event.shiftKey && document.activeElement === items[0]) {
+        event.preventDefault();
+        items.at(-1)?.focus();
+      } else if (!event.shiftKey && document.activeElement === items.at(-1)) {
+        event.preventDefault();
+        items[0]?.focus();
+      }
+    };
+    window.addEventListener("keydown", trap);
+    return () => {
+      window.removeEventListener("keydown", trap);
+      previous?.focus();
+    };
+  }, [mobileOpen]);
+
   const isLanding = location.pathname === "/welcome";
   const isPublic = location.pathname.startsWith("/status/");
   const pageTitle =
@@ -134,55 +183,59 @@ function App() {
             "/privacy": "Privacy",
           }[location.pathname] || "Page not found";
 
-  function addMonitor(name: string, url: string) {
-    if (monitors.length >= 10)
-      return "Your workspace can hold up to 10 monitors.";
+  async function addMonitor(name: string, url: string): Promise<string | null> {
     const error = validateSite(name, url);
     if (error) return error;
-    const site: Monitor = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-      url: new URL(url).host,
-      letter: name.trim()[0].toLowerCase(),
-      color: "#b7f4c9",
-      status: "pending",
-      uptime: "—",
-      latency: 0,
-      visitors: 0,
-      history: [],
-    };
-    const next = [...savedMonitors, site];
     try {
-      localStorage.setItem("pulse-monitors", JSON.stringify(next));
-    } catch {
-      return "Browser storage is unavailable. Enable it to save a local monitor.";
+      await workspace.addMonitor(name, url);
+      setAddOpen(false);
+      notify(
+        workspace.mode === "live"
+          ? "Monitor created. Its first probe is scheduled."
+          : "Saved in sample mode. Connect a live workspace to run real checks.",
+      );
+      return null;
+    } catch (error) {
+      return error instanceof Error
+        ? error.message
+        : "Monitor could not be saved.";
     }
-    setSavedMonitors(next);
-    setAddOpen(false);
-    notify("Monitor saved locally. Live checks arrive in phase 1.");
-    return null;
   }
-
-  function deleteMonitor(id: string) {
-    const next = savedMonitors.filter((m) => m.id !== id);
-    localStorage.setItem("pulse-monitors", JSON.stringify(next));
-    setSavedMonitors(next);
-    navigate("/monitors");
-    notify("Local monitor deleted.");
+  async function deleteMonitor(id: string) {
+    try {
+      await workspace.deleteMonitor(id);
+      navigate("/monitors");
+      notify("Monitor and its data deleted.");
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "Delete failed.");
+    }
   }
 
   function exportData() {
     const blob = new Blob(
-      [JSON.stringify({ mode: "sample", range, monitors }, null, 2)],
+      [
+        JSON.stringify(
+          {
+            mode: workspace.mode,
+            range,
+            monitors,
+            summaries: workspace.summaries,
+            traffic: workspace.traffics,
+            incidents: workspace.incidents,
+          },
+          null,
+          2,
+        ),
+      ],
       { type: "application/json" },
     );
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `pulse-sample-${range}.json`;
+    link.download = `pulse-${workspace.mode}-${range}.json`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    notify("Sample workspace exported.");
+    notify("Workspace data exported.");
   }
 
   return (
@@ -252,7 +305,15 @@ function App() {
                     {count && (
                       <span className="nav-count mono">{monitors.length}</span>
                     )}
-                    {alert && <span className="nav-alert">1</span>}
+                    {alert &&
+                      workspace.incidents.some((i) => !i.resolved_at) && (
+                        <span className="nav-alert">
+                          {
+                            workspace.incidents.filter((i) => !i.resolved_at)
+                              .length
+                          }
+                        </span>
+                      )}
                   </NavLink>
                 ),
               )}
@@ -327,8 +388,20 @@ function App() {
             <div className="topbar-right">
               <span className="demo-pill">
                 <span className="tiny-dot" />
-                Demo workspace
+                {workspace.mode === "sample"
+                  ? "Sample workspace"
+                  : workspace.user?.demo
+                    ? "Live chaos demo"
+                    : "Live workspace"}
               </span>
+              <button
+                className="text-button"
+                onClick={() =>
+                  workspace.user ? workspace.signOut() : setAuthOpen(true)
+                }
+              >
+                {workspace.user ? "Sign out" : "Connect live"}
+              </button>
               <span className="topbar-divider" />
               <button
                 className="notification-button icon-button"
@@ -350,6 +423,7 @@ function App() {
         )}
         <main
           id="main-content"
+          tabIndex={-1}
           className={!isLanding && !isPublic ? "main-content" : ""}
         >
           {!isLanding && !isPublic && (
@@ -418,10 +492,22 @@ function App() {
                         ? "Visitor analytics"
                         : "Your workspace at a glance"}
                     </span>
-                    <span className="toolbar-sample">Sample data</span>
+                    <span className="toolbar-sample">
+                      {workspace.mode === "sample"
+                        ? "Sample data"
+                        : workspace.liveConnected
+                          ? "Live events"
+                          : "Polling"}
+                    </span>
                   </div>
                   <div className="toolbar-right">
-                    <span className="date-label">Nov 17, 2026</span>
+                    <span className="date-label">
+                      {new Date().toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
                     <div
                       className="segmented range-control"
                       aria-label="Time range"
@@ -441,6 +527,60 @@ function App() {
                 </div>
               )}
             </>
+          )}
+          {workspace.mode === "live" && (waking || workspace.error) && (
+            <div className="connection-banner" role="status">
+              <RadioIcon />
+              <span>
+                <strong>
+                  {workspace.error
+                    ? "Monitor connection needs attention"
+                    : "Waking the monitor…"}
+                </strong>
+                <span>
+                  {workspace.error ||
+                    "Showing the last available snapshot while the API responds. No sample data is substituted."}
+                </span>
+              </span>
+              <button
+                className="button button-secondary"
+                onClick={workspace.refresh}
+              >
+                Retry
+              </button>
+            </div>
+          )}
+          {workspace.user?.demo && (
+            <div className="demo-controls">
+              <span>
+                Controlled live demo · automatic recovery after 45 seconds
+              </span>
+              <button
+                className="button button-danger"
+                onClick={async () => {
+                  try {
+                    await api("/api/demo/break", { method: "POST" });
+                    workspace.refresh();
+                    notify(
+                      "Chaos target is failing. Three checks must confirm an incident.",
+                    );
+                  } catch (e) {
+                    notify((e as Error).message);
+                  }
+                }}
+              >
+                Break it
+              </button>
+              <button
+                className="button button-secondary"
+                onClick={async () => {
+                  await api("/api/demo/recover", { method: "POST" });
+                  workspace.refresh();
+                }}
+              >
+                Recover
+              </button>
+            </div>
           )}
           <Suspense
             fallback={
@@ -484,7 +624,10 @@ function App() {
                     workspaceName={workspaceName}
                     onWorkspaceChange={(name) => {
                       setWorkspaceName(name);
-                      localStorage.setItem("pulse-workspace", name);
+                      if (!saveStorage("pulse-workspace", name))
+                        notify(
+                          "Workspace preference could not be saved in this browser.",
+                        );
                     }}
                     light={light}
                     onThemeChange={setLight}
@@ -495,6 +638,7 @@ function App() {
           </Suspense>
         </main>
       </div>
+      <AuthModal open={authOpen} onOpenChange={setAuthOpen} notify={notify} />
       <AddMonitorModal
         open={addOpen}
         onOpenChange={setAddOpen}
@@ -599,32 +743,35 @@ function App() {
         open={notificationsOpen}
         onOpenChange={setNotificationsOpen}
         title="Your notifications"
-        description="A preview of the signals that keep you informed."
+        description="Recent incident signals in this workspace."
       >
-        <div className="notification-item">
-          <span className="activity-icon warning">
-            <Activity size={17} />
-          </span>
-          <div>
-            <strong>Acme store is a little slow</strong>
-            <p>
-              Sample p95 latency reached 684 ms. This is a demo notification.
-            </p>
-            <Link to="/incidents" onClick={() => setNotificationsOpen(false)}>
-              View incident
-              <ArrowRight size={13} />
-            </Link>
-          </div>
-        </div>
-        <div className="notification-item">
-          <span className="activity-icon success">
-            <Check size={17} />
-          </span>
-          <div>
-            <strong>Production API recovered</strong>
-            <p>All clear after a sample 2-minute interruption.</p>
-          </div>
-        </div>
+        {workspace.incidents.length ? (
+          workspace.incidents.slice(0, 5).map((incident) => (
+            <div className="notification-item" key={incident.id}>
+              <span
+                className={`activity-icon ${incident.resolved_at ? "success" : "warning"}`}
+              >
+                <Activity size={17} />
+              </span>
+              <div>
+                <strong>{incident.cause.replaceAll("_", " ")}</strong>
+                <p>
+                  {monitors.find((m) => m.id === incident.site_id)?.name} ·{" "}
+                  {incident.resolved_at ? "Resolved" : "Open"}
+                </p>
+                <Link
+                  to={`/monitors/${incident.site_id}?tab=Incidents`}
+                  onClick={() => setNotificationsOpen(false)}
+                >
+                  View incident
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="section-note">No incidents recorded.</p>
+        )}
       </Modal>
       <AnimatePresence>
         {toast && (
@@ -661,12 +808,14 @@ function AddMonitorModal({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (name: string, url: string) => string | null;
+  onSubmit: (name: string, url: string) => Promise<string | null>;
   count: number;
 }) {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const workspace = useWorkspace();
   return (
     <Modal
       open={open}
@@ -675,12 +824,18 @@ function AddMonitorModal({
         setError("");
       }}
       title="A new heartbeat."
-      description="Add a website to your local preview workspace."
+      description={
+        workspace.mode === "live"
+          ? "Create a monitor with public-network validation and timed checks."
+          : "Explore locally, or connect a live workspace to start real monitoring."
+      }
     >
       <form
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
-          const result = onSubmit(name, url);
+          setBusy(true);
+          const result = await onSubmit(name, url);
+          setBusy(false);
           if (result) setError(result);
           else {
             setName("");
@@ -714,8 +869,9 @@ function AddMonitorModal({
         <div className="form-note">
           <ShieldCheck size={17} />
           <span>
-            Saved in this browser only. URL probing and server validation are
-            part of phase 1.
+            {workspace.mode === "live"
+              ? "Public destinations only. The complete URL, including its path and query, is preserved."
+              : "Sample mode stores this monitor in your browser and does not run probes. Use Connect live to enable real monitoring."}
           </span>
         </div>
         {error && (
@@ -725,7 +881,11 @@ function AddMonitorModal({
         )}
         <div className="form-footer">
           <span>{count} of 10 monitors</span>
-          <button type="submit" className="button button-primary">
+          <button
+            type="submit"
+            disabled={busy || !!workspace.user?.demo}
+            className="button button-primary"
+          >
             <Plus size={15} />
             Add monitor
           </button>
