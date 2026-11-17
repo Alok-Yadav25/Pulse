@@ -1,0 +1,10 @@
+{
+  "name": "pulse-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix web run dev",
+    "build": "npm --prefix web run build",
+    "check": "npm --prefix web run check",
+    "test": "npm --prefix web run test"
+  }
+}
