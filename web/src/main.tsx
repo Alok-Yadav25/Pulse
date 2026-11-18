@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
 import Landing from "./components/Landing";
 import "./base.css";
+import "./typography.css";
 const DashboardRoot = lazy(() => import("./DashboardRoot"));
 export function Entry() {
   const location = useLocation(),

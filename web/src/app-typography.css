@@ -1,0 +1,1002 @@
+/* Premium product typography: strong titles, generous labels, precise tabular figures. */
+.app-shell,
+.sidebar {
+  font-family: var(--body-font);
+}
+.main-content {
+  padding-top: 37px;
+}
+.page-heading {
+  margin-bottom: 32px;
+}
+.page-eyebrow {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  line-height: 1.5;
+  color: var(--purple);
+  margin-bottom: 11px;
+}
+.page-heading h1 {
+  font-family: var(--display-font);
+  font-size: clamp(30px, 3vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.065em;
+  line-height: 1.17;
+}
+.page-heading p {
+  font-family: var(--body-font);
+  font-size: 13px;
+  font-weight: 450;
+  line-height: 1.7;
+  letter-spacing: -0.025em;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.heading-dot {
+  font-size: 27px;
+  font-weight: 400;
+  margin-left: 4px;
+}
+.nav-item {
+  font-family: var(--body-font);
+  font-size: 13px;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+  min-height: 43px;
+}
+.nav-item.active {
+  font-weight: 700;
+  background: linear-gradient(105deg, #b5a0ff20, #b5a0ff08);
+  border-color: #b5a0ff24;
+  box-shadow:
+    inset 2px 0 0 var(--purple),
+    0 3px 12px #00000006;
+}
+.nav-label {
+  font-family: var(--body-font);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.125em;
+}
+.nav-shortcut,
+.nav-count,
+.nav-alert {
+  font-family: var(--data-font);
+  font-weight: 650;
+  font-size: 9px;
+}
+.search-button {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+.workspace-switcher strong {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.workspace-switcher > span > span {
+  font-size: 10px;
+  font-weight: 450;
+  letter-spacing: -0.015em;
+}
+.demo-card strong {
+  font-family: var(--display-font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+.demo-card p {
+  font-size: 11px;
+  line-height: 1.75;
+  letter-spacing: -0.02em;
+  font-weight: 450;
+}
+.demo-card a,
+.help-button,
+.profile-button > span > strong {
+  font-family: var(--body-font);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.breadcrumb {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.breadcrumb strong {
+  font-weight: 600;
+}
+.demo-pill {
+  font-size: 10px;
+  font-weight: 550;
+  letter-spacing: -0.01em;
+  padding: 6px 10px;
+}
+.topbar .text-button {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.button {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  line-height: 1.5;
+}
+.button-primary {
+  box-shadow:
+    inset 0 1px 0 #ffffff45,
+    0 4px 16px #d3ff7a0a;
+}
+.button-secondary {
+  background: linear-gradient(145deg, #ffffff04, transparent), var(--surface);
+  box-shadow: inset 0 1px 0 #ffffff06;
+}
+.text-button {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.toolbar-status {
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+}
+.toolbar-sample,
+.date-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.segmented button {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.4;
+  padding: 7px 11px;
+}
+.segmented button.selected {
+  font-weight: 750;
+  background: #b5a0ff1b;
+  box-shadow:
+    inset 0 1px 0 #ffffff08,
+    0 2px 5px #00000008;
+}
+.metric-card {
+  padding: 19px 20px 17px;
+  border-radius: 17px;
+  box-shadow:
+    inset 0 1px 0 #ffffff04,
+    0 8px 24px #00000005;
+}
+.metric-label {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+  color: var(--secondary);
+}
+.metric-value {
+  font-family: var(--data-font);
+  font-size: clamp(31px, 3.2vw, 45px);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.065em;
+  line-height: 1.05;
+}
+.metric-value > span {
+  font-family: var(--body-font);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin-left: 5px;
+}
+.metric-value-row {
+  margin-top: 17px;
+  margin-bottom: 15px;
+  gap: 8px;
+}
+.metric-foot {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.6;
+}
+.panel {
+  border-radius: 17px;
+  box-shadow:
+    inset 0 1px 0 #ffffff04,
+    0 9px 30px #00000004;
+}
+.panel-heading h2 {
+  font-family: var(--display-font);
+  font-size: 16px;
+  font-weight: 550;
+  letter-spacing: -0.045em;
+  line-height: 1.4;
+}
+.panel-heading p {
+  font-family: var(--body-font);
+  font-size: 11px;
+  font-weight: 450;
+  letter-spacing: -0.02em;
+  line-height: 1.6;
+}
+.performance-panel > .panel-heading > .text-button {
+  font-size: 10px;
+  font-weight: 650;
+}
+.unit-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.chart-number {
+  font-family: var(--data-font);
+  font-size: 36px;
+  font-weight: 650;
+  letter-spacing: -0.06em;
+  line-height: 1.2;
+}
+.chart-number > span {
+  font-family: var(--body-font);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.chart-change {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  padding: 5px 8px;
+}
+.percentile-control button {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 5px 9px;
+}
+.timing-legend {
+  gap: 5px 13px;
+}
+.timing-legend > button,
+.timing-legend > span {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+.timing-legend strong {
+  font-family: var(--data-font);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.timing-legend small {
+  font-family: var(--body-font);
+  font-size: 9px;
+  font-weight: 500;
+}
+.native-chart svg text {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+.chart-reading {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 450;
+  letter-spacing: -0.015em;
+  line-height: 1.7;
+}
+.chart-footer {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+.chart-footer > .text-button {
+  font-size: 10px;
+  font-weight: 650;
+}
+.chart-tooltip strong {
+  font-family: var(--data-font);
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.05em;
+}
+.chart-tooltip > span {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 550;
+}
+.timing-tooltip > div > span {
+  font-size: 10px;
+  font-weight: 500;
+}
+.quality-ring-count,
+.health-ring-number {
+  font-family: var(--data-font);
+  font-weight: 650;
+  letter-spacing: -0.06em;
+}
+.quality-ring-count {
+  font-size: 36px;
+}
+.quality-ring-total {
+  font-family: var(--data-font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.quality-ring-caption,
+.health-ring-label {
+  font-family: var(--body-font);
+  font-weight: 750;
+  font-size: 7px;
+  letter-spacing: 0.09em;
+}
+.quality-rings-legend > div > span {
+  font-family: var(--body-font);
+  font-size: 9px;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+.quality-rings-legend strong {
+  font-family: var(--data-font);
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.05em;
+}
+.quality-rings-legend small {
+  font-size: 10px;
+  font-weight: 500;
+}
+.health-panel .health-message h3 {
+  font-family: var(--display-font);
+  font-size: 17px;
+  font-weight: 550;
+  letter-spacing: -0.045em;
+}
+.health-message p {
+  font-size: 11px;
+  font-weight: 450;
+  letter-spacing: -0.02em;
+  line-height: 1.7;
+}
+.health-status {
+  font-size: 9px;
+  font-weight: 550;
+  letter-spacing: -0.015em;
+}
+.health-breakdown > span {
+  font-family: var(--body-font);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.health-breakdown strong {
+  font-family: var(--data-font);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.health-link {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.monitor-table th {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.monitor-identity strong {
+  font-family: var(--body-font);
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+.monitor-url {
+  font-size: 11px;
+  font-weight: 450;
+  letter-spacing: -0.025em;
+}
+.monitor-group {
+  font-size: 10px;
+  font-weight: 450;
+  letter-spacing: -0.015em;
+  line-height: 1.6;
+}
+.site-avatar {
+  font-family: var(--display-font);
+  font-weight: 550;
+}
+.status-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.monitor-table .mono {
+  font-family: var(--data-font);
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: -0.015em;
+}
+.table-footnote {
+  font-size: 10px;
+  font-weight: 450;
+  letter-spacing: -0.02em;
+  line-height: 1.7;
+}
+.activity-item p {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.activity-item > div > span {
+  font-size: 10px;
+  font-weight: 450;
+  letter-spacing: -0.02em;
+  line-height: 1.7;
+}
+.activity-item time {
+  font-family: var(--data-font);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.insight-panel .eyebrow {
+  font-family: var(--body-font);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+.insight-panel h2 {
+  font-family: var(--display-font);
+  font-size: 20px;
+  font-weight: 550;
+  letter-spacing: -0.05em;
+  line-height: 1.4;
+}
+.insight-panel p {
+  font-size: 12px;
+  font-weight: 450;
+  letter-spacing: -0.025em;
+  line-height: 1.85;
+}
+.insight-panel a {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.workspace-footnote {
+  font-size: 9px;
+  font-weight: 450;
+  letter-spacing: -0.015em;
+}
+.audience-controls > button,
+.audience-style-toggle button {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.audience-value {
+  font-family: var(--data-font);
+  font-weight: 650;
+  letter-spacing: -0.05em;
+}
+.audience-label {
+  font-family: var(--body-font);
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+.audience-radial .audience-label {
+  font-size: 7px;
+  letter-spacing: 0.035em;
+}
+.audience-legend > button {
+  font-family: var(--body-font);
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+}
+.audience-legend strong {
+  font-family: var(--data-font);
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+.pages-chart-axis {
+  font-family: var(--data-font);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.pages-bar-count {
+  font-family: var(--data-font);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+.pages-bar-label {
+  font-size: 10px;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+}
+.pages-chart-detail {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.pages-chart-detail strong {
+  font-family: var(--data-font);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+.chart-type-badge {
+  font-size: 9px;
+  font-weight: 550;
+  letter-spacing: -0.015em;
+}
+.ranking-row {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+.ranking-row > .mono {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+}
+.ranking-row > strong {
+  font-family: var(--data-font) !important;
+  font-size: 15px;
+  font-weight: 600 !important;
+  letter-spacing: -0.04em;
+}
+.vitals-grid strong {
+  font-family: var(--data-font);
+  font-size: 36px;
+  font-weight: 650;
+  letter-spacing: -0.055em;
+}
+.vitals-grid > div > span:first-child {
+  font-family: var(--body-font);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.075em;
+}
+.vital-band {
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+.traffic-toolbar label,
+.settings-body label,
+.form-grid label {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.form input,
+.settings-body input,
+.settings-body select,
+.settings-body textarea {
+  font-family: var(--body-font);
+  font-size: 13px;
+  font-weight: 450;
+  letter-spacing: -0.025em;
+  line-height: 1.65;
+}
+.detail-tabs button {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  min-height: 43px;
+}
+.section-note {
+  font-family: var(--body-font);
+  font-size: 11px;
+  font-weight: 450;
+  letter-spacing: -0.02em;
+  line-height: 1.8;
+}
+.subtle-badge {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.modal h2,
+.empty-state h2,
+.detail-heading h1,
+.public-status h1 {
+  font-family: var(--display-font);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+}
+.modal p,
+.empty-state p {
+  font-family: var(--body-font);
+  font-size: 13px;
+  line-height: 1.8;
+  letter-spacing: -0.025em;
+}
+@media (max-width: 1200px) {
+  .metric-value {
+    font-size: 36px;
+  }
+  .metric-label {
+    font-size: 11px;
+  }
+  .metric-foot {
+    font-size: 9px;
+  }
+  .metric-spark {
+    max-width: 25%;
+  }
+  .timing-legend {
+    gap: 5px 10px;
+  }
+  .timing-legend > button {
+    font-size: 9px;
+  }
+  .timing-legend strong {
+    font-size: 10px;
+  }
+  .quality-rings-legend > div > span {
+    font-size: 8px;
+  }
+}
+@media (max-width: 1000px) {
+  .page-heading h1 {
+    font-size: 32px;
+  }
+  .metric-value {
+    font-size: 34px;
+  }
+  .metric-value-row {
+    gap: 6px;
+  }
+  .metric-label {
+    font-size: 10px;
+  }
+  .quality-rings-legend strong {
+    font-size: 17px;
+  }
+  .percentile-control button {
+    padding: 5px 7px;
+  }
+}
+@media (max-width: 760px) {
+  .main-content {
+    padding-top: 29px;
+  }
+  .page-heading h1 {
+    font-size: 34px;
+    line-height: 1.18;
+  }
+  .page-heading p {
+    font-size: 12px;
+    max-width: 245px;
+  }
+  .page-eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.11em;
+  }
+  .button {
+    font-size: 11px;
+    min-height: 39px;
+    padding: 9px 13px;
+  }
+  .metric-value {
+    font-size: 38px;
+  }
+  .metric-label {
+    font-size: 12px;
+  }
+  .metric-foot {
+    font-size: 10px;
+  }
+  .metric-spark {
+    max-width: 28%;
+  }
+  .nav-item {
+    font-size: 14px;
+    min-height: 46px;
+  }
+  .quality-rings-legend > div > span {
+    font-size: 10px;
+  }
+  .quality-rings-legend strong {
+    font-size: 21px;
+  }
+  .health-panel .health-message h3 {
+    font-size: 19px;
+  }
+  .panel-heading h2 {
+    font-size: 16px;
+  }
+  .insight-panel p {
+    font-size: 12px;
+  }
+  .toolbar-status {
+    font-size: 11px;
+  }
+  .status-label {
+    font-size: 11px;
+  }
+  .monitor-table .mono {
+    font-size: 11px;
+  }
+}
+@media (max-width: 480px) {
+  .main-content {
+    padding: 27px 16px 18px;
+  }
+  .page-heading h1 {
+    font-size: 29px;
+    letter-spacing: -0.07em;
+    max-width: 215px;
+  }
+  .page-heading p {
+    font-size: 11px;
+    max-width: 220px;
+    line-height: 1.8;
+  }
+  .page-eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+  }
+  .heading-actions {
+    padding-top: 20px;
+  }
+  .heading-actions .button {
+    font-size: 10px;
+    padding: 10px 11px;
+    gap: 5px;
+  }
+  .metric-card {
+    padding: 16px 14px;
+    min-height: 151px;
+    border-radius: 16px;
+  }
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    gap: 4px;
+  }
+  .metric-icon {
+    width: 22px;
+    height: 22px;
+  }
+  .metric-value {
+    font-size: 32px;
+    font-weight: 650;
+    letter-spacing: -0.07em;
+  }
+  .metric-value > span {
+    font-size: 11px;
+    margin-left: 3px;
+  }
+  .metric-value-row {
+    margin-top: 17px;
+    margin-bottom: 14px;
+    gap: 6px;
+  }
+  .metric-foot {
+    font-size: 9px;
+    line-height: 1.75;
+  }
+  .metric-spark {
+    max-width: 21%;
+    height: 30px;
+  }
+  .toolbar-status {
+    font-size: 10px;
+    gap: 5px;
+    max-width: 170px;
+  }
+  .range-control button {
+    font-size: 10px;
+    min-width: 29px;
+    padding: 6px 7px;
+  }
+  .segmented {
+    padding: 3px;
+  }
+  .panel-heading h2 {
+    font-size: 16px;
+    letter-spacing: -0.05em;
+  }
+  .panel-heading p {
+    font-size: 10px;
+  }
+  .performance-panel > .panel-heading > .text-button {
+    font-size: 9px;
+  }
+  .chart-number {
+    font-size: 33px;
+  }
+  .chart-number > span {
+    font-size: 12px;
+  }
+  .chart-change {
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+  .percentile-control button {
+    font-size: 9px;
+    padding: 5px 7px;
+  }
+  .timing-legend {
+    padding-top: 12px;
+    gap: 5px 11px;
+    min-height: 62px;
+  }
+  .timing-legend > button {
+    font-size: 10px;
+  }
+  .timing-legend strong {
+    font-size: 11px;
+  }
+  .timing-legend small {
+    font-size: 8px;
+  }
+  .chart-reading {
+    font-size: 9px;
+    line-height: 1.8;
+  }
+  .chart-footer {
+    font-size: 9px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+  .chart-footer > .text-button {
+    font-size: 9px;
+  }
+  .health-status {
+    font-size: 9px;
+  }
+  .quality-rings-legend > div > span {
+    font-size: 9px;
+  }
+  .quality-rings-legend strong {
+    font-size: 21px;
+  }
+  .health-message p {
+    font-size: 11px;
+  }
+  .health-breakdown > span {
+    font-size: 9px;
+  }
+  .health-link {
+    font-size: 10px;
+  }
+  .demo-pill {
+    font-size: 8px;
+    padding: 5px 7px;
+  }
+  .breadcrumb {
+    font-size: 11px;
+  }
+  .topbar-right > .text-button {
+    font-size: 10px;
+  }
+  .topbar-right {
+    gap: 9px;
+  }
+  .pages-bar-label {
+    font-size: 9px;
+  }
+  .pages-chart-axis {
+    font-size: 8px;
+  }
+  .pages-chart-detail {
+    font-size: 10px;
+  }
+  .chart-type-badge {
+    font-size: 8px;
+  }
+  .audience-controls > button,
+  .audience-style-toggle button {
+    font-size: 9px;
+  }
+  .audience-panel > .panel-heading h2 {
+    font-size: 15px;
+  }
+  .audience-legend > button {
+    font-size: 11px;
+  }
+  .ranking-row > .mono {
+    font-size: 11px;
+  }
+  .section-note {
+    font-size: 11px;
+  }
+  .workspace-footnote {
+    font-size: 8px;
+  }
+  .insight-panel .eyebrow {
+    font-size: 8px;
+  }
+  .insight-panel h2 {
+    font-size: 20px;
+  }
+  .insight-panel p {
+    font-size: 11px;
+    line-height: 1.85;
+  }
+  .insight-panel a {
+    font-size: 10px;
+  }
+  .activity-item p {
+    font-size: 12px;
+  }
+  .activity-item > div > span {
+    font-size: 9px;
+  }
+  .activity-item time {
+    font-size: 8px;
+  }
+}
+@media (max-width: 390px) {
+  .metric-value {
+    font-size: 29px;
+  }
+  .metric-spark {
+    max-width: 20%;
+  }
+  .metric-label {
+    font-size: 10px;
+  }
+  .metric-foot {
+    font-size: 8px;
+  }
+  .toolbar-status {
+    font-size: 9px;
+  }
+  .range-control button {
+    font-size: 9px;
+    padding: 6px;
+  }
+  .page-heading h1 {
+    font-size: 27px;
+  }
+  .timing-legend {
+    gap: 5px 9px;
+  }
+  .timing-legend > button {
+    font-size: 9px;
+  }
+  .timing-legend strong {
+    font-size: 10px;
+  }
+}
+.mono {
+  font-family: var(--data-font);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.025em;
+}

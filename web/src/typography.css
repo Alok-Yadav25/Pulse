@@ -1,0 +1,545 @@
+/* The type system: expressive display, precise interface, quietly technical code. */
+@font-face {
+  font-family: "Sora";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("/fonts/sora-latin-v1.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/manrope-latin-v1.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Sora Fallback";
+  src: local("Arial");
+  size-adjust: 102.979%;
+  ascent-override: 94.194%;
+  descent-override: 28.161%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Manrope Fallback";
+  src: local("Arial");
+  size-adjust: 104.136%;
+  ascent-override: 102.367%;
+  descent-override: 28.809%;
+  line-gap-override: 0%;
+}
+:root {
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  --type-label-tracking: 0.075em;
+  --type-heading-tracking: -0.055em;
+}
+body {
+  font-family: var(--body-font);
+  font-weight: 450;
+  font-feature-settings: "ss01" 1;
+  line-height: 1.65;
+}
+button,
+input,
+select,
+textarea {
+  font-family: var(--body-font);
+}
+h1,
+h2,
+h3 {
+  font-family: var(--display-font);
+  font-weight: 600;
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+.mono {
+  font-family: var(--data-font);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.025em;
+}
+pre,
+code,
+kbd,
+.snippet-code,
+.code-block {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-feature-settings: normal;
+}
+.studio-landing .landing-nav-links a {
+  font-size: 13px;
+  font-weight: 550;
+  letter-spacing: -0.015em;
+  color: #c9c3db;
+}
+.studio-landing .landing-nav-cta {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  background: linear-gradient(135deg, #ffffff08, #ffffff02);
+  border-color: #cbbaff35;
+  box-shadow: inset 0 1px 0 #ffffff08;
+}
+.studio-landing .landing-chip {
+  width: fit-content;
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.115em;
+  background: #b6a0ff09;
+  border: 1px solid #c6b2ff21;
+  padding: 9px 13px;
+  border-radius: 99px;
+  margin-bottom: 27px;
+  color: #d5cce6;
+}
+.studio-landing .landing-hero h1 {
+  font-family: var(--display-font);
+  font-size: clamp(65px, 6.8vw, 108px);
+  font-weight: 650;
+  line-height: 1.075;
+  letter-spacing: -0.07em;
+  margin-bottom: 25px;
+  font-feature-settings: "ss01" 1;
+}
+.studio-landing .landing-hero h1 .hero-gradient {
+  font-weight: 450;
+  letter-spacing: -0.075em;
+  background-image: linear-gradient(
+    105deg,
+    #ffe1ea 1%,
+    #d9caff 40%,
+    #a08aff 82%
+  );
+}
+.studio-landing .hero-asterisk {
+  font-family: var(--body-font);
+  font-size: 39px;
+  top: -19px;
+  right: 18px;
+  color: #b7a0ff;
+}
+.studio-landing .hero-copy > p {
+  font-size: 18px;
+  font-weight: 450;
+  letter-spacing: -0.035em;
+  line-height: 1.7;
+  color: #b8afcc;
+  max-width: 390px;
+}
+.studio-landing .hero-primary {
+  font-weight: 750;
+  font-size: 13px;
+  letter-spacing: -0.025em;
+  min-height: 54px;
+  padding-left: 23px;
+  box-shadow:
+    inset 0 1px 0 #ffffff44,
+    0 6px 24px #beff7a10;
+}
+.studio-landing .landing-demo {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: #e5ddef;
+}
+.studio-landing .hero-fine {
+  font-size: 11px;
+  font-weight: 500;
+  color: #b6abc8;
+  letter-spacing: -0.015em;
+}
+.studio-landing .hero-scroll {
+  font-family: var(--body-font);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: #aca0c0;
+}
+.studio-landing .landing-kicker {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.15em;
+}
+.studio-landing .section-intro h2 {
+  font-family: var(--display-font);
+  font-size: clamp(36px, 3.7vw, 57px);
+  font-weight: 550;
+  line-height: 1.15;
+  letter-spacing: -0.065em;
+}
+.studio-landing .section-intro h2 > span {
+  font-weight: 400;
+  color: #b0a2c5;
+}
+.studio-landing .section-intro > p {
+  font-size: 14px;
+  line-height: 1.85;
+  font-weight: 450;
+  letter-spacing: -0.025em;
+  color: #b3a8c7;
+}
+.studio-landing .selector-caption {
+  font-family: var(--body-font);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+}
+.studio-landing .selector-caption strong {
+  font-family: var(--body-font);
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.055em;
+}
+.studio-landing .signal-selector button {
+  font-family: var(--display-font);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  padding-top: 26px;
+  padding-bottom: 26px;
+}
+.studio-landing .selector-index {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 600;
+}
+.studio-landing .feature-top > span {
+  font-family: var(--body-font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+}
+.studio-landing .performance-copy h3 {
+  font-family: var(--display-font);
+  font-size: 35px;
+  line-height: 1.16;
+  font-weight: 550;
+  letter-spacing: -0.06em;
+}
+.studio-landing .performance-copy h3 em {
+  font-weight: 400;
+}
+.studio-landing .signal-people h3 {
+  font-family: var(--display-font);
+  font-size: 26px;
+  font-weight: 550;
+  letter-spacing: -0.055em;
+}
+.studio-landing .signal-people > p {
+  font-size: 13px;
+  font-weight: 450;
+  letter-spacing: -0.02em;
+}
+.studio-landing .floating-stat-main > strong {
+  font-family: var(--data-font);
+  font-weight: 650;
+  font-size: 45px;
+  letter-spacing: -0.07em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.studio-landing .floating-stat-main > div {
+  font-size: 11px;
+  font-weight: 600;
+}
+.studio-landing .floating-stat-main > p {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.6;
+}
+.studio-landing .floating-stat-main small {
+  font-family: var(--body-font);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+}
+.studio-landing .note-status {
+  font-family: var(--body-font);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.studio-landing .request-phases button > span {
+  font-family: var(--body-font);
+  font-weight: 650;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.studio-landing .request-phases button strong {
+  font-family: var(--data-font);
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+}
+.studio-landing .phase-caption {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: -0.015em;
+}
+.studio-landing .people-footer strong {
+  font-family: var(--data-font);
+  font-weight: 650;
+  letter-spacing: -0.07em;
+  font-size: 38px;
+}
+.studio-landing .signal-flow > span {
+  font-weight: 550;
+  letter-spacing: -0.025em;
+}
+.studio-landing .signal-flow > a {
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.studio-landing .landing-finale h2 {
+  font-family: var(--display-font);
+  font-size: clamp(42px, 5.6vw, 84px);
+  font-weight: 550;
+  letter-spacing: -0.07em;
+  line-height: 1.14;
+}
+.studio-landing .landing-finale h2 > span {
+  font-weight: 400;
+}
+.studio-landing .landing-footer > div {
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+.studio-landing .landing-footer > span {
+  font-family: var(--body-font);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+}
+.studio-landing .feature-disclosure {
+  font-size: 10px;
+  font-weight: 500;
+}
+@media (max-width: 1200px) {
+  .studio-landing .landing-hero h1 {
+    font-size: 7.2vw;
+  }
+  .studio-landing .hero-asterisk {
+    right: 2px;
+    font-size: 33px;
+  }
+  .studio-landing .signal-selector button {
+    font-size: 16px;
+  }
+  .studio-landing .floating-stat-main > strong {
+    font-size: 38px;
+  }
+}
+@media (max-width: 900px) and (min-width: 681px) {
+  .studio-landing .landing-hero h1 {
+    font-size: 7.8vw;
+  }
+  .studio-landing .hero-copy > p {
+    font-size: 15px;
+  }
+  .studio-landing .hero-primary {
+    font-size: 11px;
+    min-height: 47px;
+    padding-left: 17px;
+  }
+  .studio-landing .landing-demo {
+    font-size: 11px;
+  }
+  .studio-landing .hero-fine {
+    font-size: 10px;
+  }
+  .studio-landing .floating-stat-main > strong {
+    font-size: 33px;
+  }
+  .studio-landing .performance-copy h3 {
+    font-size: 29px;
+  }
+  .studio-landing .signal-people h3 {
+    font-size: 22px;
+  }
+  .studio-landing .feature-top > span {
+    font-size: 8px;
+  }
+  .studio-landing .selector-caption strong {
+    font-size: 18px;
+  }
+  .studio-landing .signal-selector button {
+    font-size: 15px;
+    gap: 7px;
+  }
+  .studio-landing .selector-index {
+    font-size: 8px;
+  }
+  .studio-landing .section-intro h2 {
+    font-size: 37px;
+  }
+  .studio-landing .landing-finale h2 {
+    font-size: 56px;
+  }
+}
+@media (max-width: 680px) {
+  .studio-landing .landing-hero {
+    padding-top: 43px;
+  }
+  .studio-landing .landing-hero h1 {
+    font-size: clamp(50px, 11.45vw, 76px);
+    letter-spacing: -0.075em;
+    line-height: 1.09;
+    margin-bottom: 24px;
+  }
+  .studio-landing .landing-chip {
+    font-size: 9px;
+    letter-spacing: 0.09em;
+    padding: 8px 11px;
+    margin-bottom: 24px;
+  }
+  .studio-landing .hero-copy > p {
+    font-size: 16px;
+    line-height: 1.7;
+    letter-spacing: -0.035em;
+  }
+  .studio-landing .hero-asterisk {
+    font-size: 29px;
+    right: 0;
+    top: -16px;
+  }
+  .studio-landing .hero-primary {
+    font-size: 12px;
+    min-height: 50px;
+    padding-left: 18px;
+    gap: 15px;
+  }
+  .studio-landing .landing-demo {
+    font-size: 12px;
+  }
+  .studio-landing .hero-fine {
+    font-size: 11px;
+    gap: 16px;
+  }
+  .studio-landing .landing-nav-cta {
+    font-size: 11px;
+    padding: 10px 13px;
+    gap: 11px;
+  }
+  .studio-landing .section-intro h2 {
+    font-size: 35px;
+    line-height: 1.17;
+  }
+  .studio-landing .section-intro .landing-kicker {
+    font-size: 9px;
+    letter-spacing: 0.11em;
+  }
+  .studio-landing .section-intro > p {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .studio-landing .signal-selector button {
+    font-size: 14px;
+    padding: 22px 7px;
+    gap: 7px;
+  }
+  .studio-landing .selector-index {
+    font-size: 8px;
+  }
+  .studio-landing .selector-caption {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+  .studio-landing .selector-caption strong {
+    font-size: 19px;
+  }
+  .studio-landing .floating-stat-main > strong {
+    font-size: 35px;
+  }
+  .studio-landing .floating-stat-main > div {
+    font-size: 10px;
+  }
+  .studio-landing .floating-stat-main > p {
+    font-size: 9px;
+  }
+  .studio-landing .feature-top > span {
+    font-size: 9px;
+    letter-spacing: 0.07em;
+  }
+  .studio-landing .performance-copy h3 {
+    font-size: 32px;
+  }
+  .studio-landing .signal-people h3 {
+    font-size: 26px;
+  }
+  .studio-landing .request-phases button strong {
+    font-size: 25px;
+  }
+  .studio-landing .request-phases button > span {
+    font-size: 10px;
+  }
+  .studio-landing .phase-caption {
+    font-size: 11px;
+  }
+  .studio-landing .landing-finale h2 {
+    font-size: 43px;
+    letter-spacing: -0.07em;
+    line-height: 1.18;
+  }
+  .studio-landing .landing-finale .landing-kicker {
+    font-size: 9px;
+  }
+  .studio-landing .finale-cta {
+    width: 60px;
+    height: 60px;
+  }
+  .studio-landing .landing-footer > div {
+    font-size: 11px;
+  }
+}
+@media (max-width: 390px) {
+  .studio-landing .landing-hero h1 {
+    font-size: 49px;
+  }
+  .studio-landing .hero-primary {
+    font-size: 11px;
+    gap: 12px;
+    padding-left: 15px;
+  }
+  .studio-landing .landing-demo {
+    font-size: 11px;
+  }
+  .studio-landing .hero-fine {
+    font-size: 10px;
+  }
+  .studio-landing .landing-finale h2 {
+    font-size: 40px;
+  }
+  .studio-landing .signal-selector button {
+    font-size: 13px;
+  }
+  .studio-landing .floating-stat-main > strong {
+    font-size: 31px;
+  }
+  .studio-landing .floating-stat-main > p {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 680px) {
+  .studio-landing .hero-copy {
+    width: 100%;
+    align-self: stretch;
+  }
+  .studio-landing .landing-hero h1 {
+    font-size: clamp(56px, 13.4vw, 82px);
+  }
+}
+@media (max-width: 390px) {
+  .studio-landing .landing-hero h1 {
+    font-size: 54px;
+  }
+}

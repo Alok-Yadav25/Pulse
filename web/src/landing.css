@@ -105,7 +105,7 @@
   padding-bottom: 55px;
 }
 .landing-chip {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 10px;
   letter-spacing: 1.8px;
   color: #c3bfd5;
@@ -227,7 +227,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 8px;
   letter-spacing: 1.4px;
   color: #9d99b1;
@@ -280,7 +280,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 8px;
   letter-spacing: 1.4px;
   color: #a399c6;
@@ -298,7 +298,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   letter-spacing: 1.2px;
   color: #d8cdef;
@@ -350,7 +350,7 @@
 }
 .signal-sample {
   margin-left: auto;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   letter-spacing: 1px;
   color: #bbb0d5;
@@ -370,7 +370,7 @@
   white-space: nowrap;
 }
 .floating-stat-main small {
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   font-size: 14px;
   color: #bcb3cf;
   letter-spacing: -0.2px;
@@ -434,7 +434,7 @@
   box-shadow: 0 0 10px #d3ff7a0b;
 }
 .floating-stat-note > span:last-child {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   letter-spacing: 0.7px;
   display: flex;
@@ -452,7 +452,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   letter-spacing: 0.8px;
   color: #a59aba;
@@ -475,7 +475,7 @@
   width: 26%;
   flex-shrink: 0;
   color: #9c98b1;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 8px;
   line-height: 1.9;
   letter-spacing: 1.4px;
@@ -529,7 +529,7 @@
   transform: scaleX(1);
 }
 .selector-index {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 8px;
   letter-spacing: 0;
   color: #a6a0ba;
@@ -559,7 +559,7 @@
   margin-bottom: 37px;
 }
 .landing-kicker {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 9px;
   letter-spacing: 1.8px;
   color: #b5a0ff;
@@ -615,7 +615,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 8px;
   letter-spacing: 0.8px;
 }
@@ -643,7 +643,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   color: #aaa0bf;
   letter-spacing: 0.4px;
@@ -729,7 +729,7 @@
   margin: 4px 0;
 }
 .request-phases button small {
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   font-size: 10px;
   color: #a79cb9;
   margin-left: 4px;
@@ -842,7 +842,7 @@
   gap: 20px;
 }
 .people-footer > span:first-child {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   letter-spacing: 0.8px;
   color: #b8abc9;
@@ -1012,7 +1012,7 @@
   width: 20px;
 }
 .landing-footer > span {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   letter-spacing: 1.4px;
 }

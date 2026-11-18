@@ -23,7 +23,7 @@
   box-shadow: 0 0 30px #d3ff7a0a;
 }
 .beta-badge {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   border-color: var(--border);
   letter-spacing: 1px;
   border-radius: 5px;
@@ -64,7 +64,7 @@
   color: var(--purple);
 }
 .nav-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   letter-spacing: 1.5px;
   color: var(--muted);
@@ -138,7 +138,7 @@
   margin-bottom: 32px;
 }
 .page-eyebrow {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   color: var(--purple);
   font-size: 8px;
   letter-spacing: 1.5px;
@@ -213,7 +213,7 @@
   gap: 2px;
 }
 .segmented button {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 9px;
   border-radius: 5px;
   padding: 6px 12px;
@@ -399,7 +399,7 @@
 }
 .chart-number > span {
   font-size: 13px;
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   margin-left: 5px;
 }
 .chart-change {
@@ -511,7 +511,7 @@
   fill: var(--text);
 }
 .health-ring-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   letter-spacing: 1.5px;
   fill: var(--muted);
@@ -689,7 +689,7 @@
   color: var(--purple);
 }
 .insight-panel .eyebrow {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   color: var(--purple);
 }
@@ -1341,7 +1341,7 @@
   font-weight: 400;
 }
 .audience-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   fill: var(--muted);
   font-size: 7px;
   letter-spacing: 0.8px;
@@ -1416,7 +1416,7 @@
   z-index: -1;
 }
 .ranking-row > .mono {
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   letter-spacing: -0.1px;
 }
 .ranking-row > strong {
@@ -1663,7 +1663,7 @@
   letter-spacing: -0.4px;
 }
 .quality-ring-caption {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 6px;
   letter-spacing: 1.1px;
   fill: var(--muted);
@@ -1698,7 +1698,7 @@
   margin-top: 4px;
 }
 .quality-rings-legend small {
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   font-size: 9px;
   color: var(--muted);
   margin-left: 2px;
@@ -1770,7 +1770,7 @@
   flex-direction: column;
   justify-content: space-between;
   color: var(--muted);
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--label-font);
   font-size: 7px;
   text-align: right;
   padding-right: 3px;
@@ -1891,7 +1891,7 @@
   white-space: nowrap;
 }
 .pages-chart-detail small {
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   font-size: 8px;
   color: var(--muted);
   margin-left: 3px;

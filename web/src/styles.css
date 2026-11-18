@@ -2,31 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "Inter Variable";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: optional;
-  src: url("/fonts/inter-latin-v1.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Space Grotesk";
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: optional;
-  src: url("/fonts/space-grotesk-latin-v1.woff2") format("woff2");
-}
-
 :root {
   color-scheme: dark;
-  font-family:
-    "Inter Variable",
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
-  --display-font: "Space Grotesk", "Inter Variable", sans-serif;
+  --body-font:
+    "Manrope", "Manrope Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+  --display-font: "Sora", "Sora Fallback", sans-serif;
+  --data-font: "Manrope", "Manrope Fallback", sans-serif;
+  --label-font: "Manrope", "Manrope Fallback", sans-serif;
+  font-family: var(--body-font);
   --bg: #0b0b13;
   --sidebar: #0e0d17;
   --surface: #14121f;
@@ -872,7 +855,7 @@ kbd {
   white-space: nowrap;
 }
 .metric-value > span {
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   font-size: 15px;
   color: var(--muted);
   margin-left: 4px;
@@ -982,7 +965,7 @@ kbd {
 .chart-number > span {
   font-size: 12px;
   color: var(--muted);
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   letter-spacing: -0.2px;
   margin-left: 5px;
 }
@@ -2132,7 +2115,7 @@ kbd {
   font-weight: 400;
 }
 .vitals-grid small {
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   font-size: 12px;
   color: var(--muted);
   margin-left: 4px;
@@ -2920,7 +2903,7 @@ kbd {
   margin-top: 9px;
 }
 .hero-preview-value small {
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--body-font);
   color: var(--muted);
   font-size: 22px;
   letter-spacing: -0.5px;

@@ -1,5 +1,5 @@
 {
-  "scope": "Local production landing with supplied logo and layered graphics; three sequential Lighthouse mobile runs",
+  "scope": "Sora/Manrope typography, local production landing; three sequential Lighthouse mobile runs",
   "runs": [
     {
       "scores": {
@@ -8,9 +8,9 @@
         "best-practices": 96,
         "seo": 100
       },
-      "lcp_ms": 2003,
+      "lcp_ms": 1873,
       "cls": 0,
-      "tbt_ms": 0
+      "tbt_ms": 5
     },
     {
       "scores": {
@@ -19,9 +19,9 @@
         "best-practices": 96,
         "seo": 100
       },
-      "lcp_ms": 2109,
+      "lcp_ms": 1858,
       "cls": 0,
-      "tbt_ms": 0
+      "tbt_ms": 4
     },
     {
       "scores": {
@@ -30,9 +30,9 @@
         "best-practices": 96,
         "seo": 100
       },
-      "lcp_ms": 2105,
+      "lcp_ms": 1853,
       "cls": 0,
-      "tbt_ms": 0
+      "tbt_ms": 1
     }
   ]
 }

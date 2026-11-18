@@ -4,6 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 test('landing introduces Pulse and public status loads',async({page},info)=>{
  await page.goto('/'); await expect(page.getByRole('heading',{name:/Stay ahead/ })).toBeVisible();
  await expect(page.locator('.landing-hero > div').first()).toHaveCSS('opacity','1');
+ const fonts=await page.evaluate(async()=>{await document.fonts.ready;return Array.from(document.fonts).filter(f=>['Sora','Manrope'].includes(f.family)).map(f=>({family:f.family,status:f.status}));});expect(fonts).toEqual(expect.arrayContaining([{family:'Sora',status:'loaded'},{family:'Manrope',status:'loaded'}]));
  await page.screenshot({path:info.outputPath('landing.png'),fullPage:true});
  await page.getByRole('link',{name:'Open dashboard'}).click(); await expect(page.getByRole('heading',{name:/Your web. In sync/})).toBeVisible();
  await page.goto('/status/acme'); await expect(page.getByRole('heading',{name:'Keeping you in the loop.'})).toBeVisible();

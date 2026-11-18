@@ -8,10 +8,10 @@ These results describe the local production preview on macOS arm64 with Node 22.
 | Vitest | 13 tests passed |
 | Ruff and pytest, including real PostgreSQL integration | 86 tests passed |
 | Alembic on a disposable PostgreSQL database | Upgrade, downgrade to base, upgrade passed |
-| Playwright production-build tests | 10 updated UI flows passed on desktop and mobile; three live workflows were verified before this chart-only change |
+| Playwright production-build tests | 10 updated UI flows passed on desktop and mobile; three live workflows were verified before the chart and typography changes |
 | Automated WCAG A/AA checks | No axe violations on landing, dashboard and traffic, desktop and mobile |
 | Landing Lighthouse, default mobile throttling, three runs | Performance 99 / 99 / 99; accessibility 100, best practices 96, SEO 100 in each run |
-| Landing LCP / CLS | 2.00–2.11 seconds / 0 in all three runs |
+| Landing LCP / CLS | 1.85–1.87 seconds / 0 in all three runs |
 | JavaScript entry | 65.9 KiB gzip |
 | All JavaScript, including every deferred route and chart | About 166.1 KiB gzip; build fails above 200 KiB |
 | Native SVG chart chunk | 3.0 KiB gzip |
@@ -22,7 +22,7 @@ Browser tests cover sample persistence, full URL preservation, dark/light themes
 
 The visual redesign retains a 99 Lighthouse performance score in all three sequential local runs. Lighthouse’s remaining best-practices deduction is for small decorative labels; accessibility, SEO, and layout stability scores are recorded separately.
 
-The independent landing bundle and CSS do not fetch monitoring data. Fonts are local and use optional display; charts use native SVG. The entry budget is intentionally supplemented by an all-chunks budget so lazy loading cannot conceal an oversized application.
+The independent landing bundle and CSS do not fetch monitoring data. Sora and Manrope are local, preloaded variable fonts with swap display and metric-adjusted fallbacks; charts use native SVG. Browser checks verify both font faces actually load. The entry budget is intentionally supplemented by an all-chunks budget so lazy loading cannot conceal an oversized application.
 
 ## Local ingestion diagnostic
 

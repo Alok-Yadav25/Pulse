@@ -41,6 +41,7 @@ import { useWorkspace } from "./lib/workspace";
 import { readStorage, saveStorage } from "./lib/storage";
 import "./styles.css";
 import "./studio.css";
+import "./app-typography.css";
 import AuthModal from "./components/AuthModal";
 import { api } from "./lib/api";
 import { Radio as RadioIcon } from "lucide-react";
