@@ -26,6 +26,7 @@ import {
 import { EmptyState, Logo, Modal, StatusDot, UptimeStrip } from "./ui";
 import { MetricCards, PerformancePanel } from "./Dashboard";
 import Landing from "./Landing";
+import AudienceChart from "./AudienceChart";
 import { api, API_URL, download } from "../lib/api";
 import { useWorkspace } from "../lib/workspace";
 import { demoMonitors } from "../lib/demo";
@@ -62,7 +63,7 @@ export default function OtherPages(props: Props) {
       title="Page not found"
       text="Your workspace is right this way."
       action={
-        <Link to="/" className="button button-primary">
+        <Link to="/dashboard" className="button button-primary">
           Back to overview
           <ArrowRight size={15} />
         </Link>
@@ -137,7 +138,7 @@ function Traffic({ range, siteId }: { range: Range; siteId?: string }) {
       <div className="traffic-grid">
         <RankCard title="Top pages" rows={data.top_pages} />
         <RankCard title="Referrers" rows={data.referrers} />
-        <RankCard title="Devices" rows={data.devices} />
+        <AudienceChart devices={data.devices} referrers={data.referrers} />
         <RankCard title="Timezones" rows={data.timezones} />
       </div>
       <section className="panel vitals-card">
@@ -168,6 +169,34 @@ function Traffic({ range, siteId }: { range: Range; siteId?: string }) {
                 {formatNumber(vitals[key]?.p75, key === "cls" ? 3 : 0)}
                 <small>{vitals[key]?.p75 != null ? unit : ""}</small>
               </strong>
+              {vitals[key]?.p75 != null && (
+                <div
+                  className="vital-meter"
+                  aria-hidden="true"
+                  style={
+                    {
+                      "--vital-good": { lcp_ms: 2500, inp_ms: 200, cls: 0.1 }[
+                        key
+                      ],
+                      "--vital-mid": { lcp_ms: 1500, inp_ms: 300, cls: 0.15 }[
+                        key
+                      ],
+                      "--vital-end": { lcp_ms: 2000, inp_ms: 250, cls: 0.15 }[
+                        key
+                      ],
+                    } as React.CSSProperties
+                  }
+                >
+                  <i
+                    style={{
+                      left: `${Math.min(100, (vitals[key].p75 / ({ lcp_ms: 6000, inp_ms: 750, cls: 0.4 }[key] || 1)) * 100)}%`,
+                    }}
+                  />
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              )}
               <span className={`vital-band ${vitals[key]?.band || "unknown"}`}>
                 {vitals[key]?.band?.replaceAll("-", " ") || "No data"}
               </span>

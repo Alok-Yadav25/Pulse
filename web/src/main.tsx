@@ -7,8 +7,8 @@ const DashboardRoot = lazy(() => import("./DashboardRoot"));
 export function Entry() {
   const location = useLocation(),
     navigate = useNavigate();
-  return location.pathname === "/welcome" ? (
-    <Landing onAdd={() => navigate("/?add=1")} />
+  return ["/", "/welcome"].includes(location.pathname) ? (
+    <Landing onAdd={() => navigate("/dashboard?add=1")} />
   ) : (
     <Suspense
       fallback={

@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useWorkspace } from "../lib/workspace";
 import { formatNumber, bucketChart } from "../lib/workspace-data";
 import type { ChartPoint } from "../lib/workspace";
@@ -26,10 +26,19 @@ export default function LatencyChart({
     !siteId && workspace.monitors.length > 1
       ? bucketChart(summary.chart)
       : summary.chart;
-  const width = 760,
-    height = 190,
-    left = 47,
-    bottom = 165;
+  const container = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(760);
+  useEffect(() => {
+    if (!container.current) return;
+    const observer = new ResizeObserver(([entry]) =>
+      setWidth(Math.max(280, entry.contentRect.width)),
+    );
+    observer.observe(container.current);
+    return () => observer.disconnect();
+  }, [points.length]);
+  const height = 240,
+    left = 42,
+    bottom = 204;
   const max =
     Math.max(100, summary[percentile] || 0, ...points.map((p) => p.total_ms)) *
     1.15;
@@ -42,10 +51,14 @@ export default function LatencyChart({
   const y = (value: number) => bottom - (value / max) * (bottom - 12);
   const path = (data: ChartPoint[], field: keyof ChartPoint = "total_ms") =>
     data
-      .map(
-        (p, i) =>
-          `${i ? "L" : "M"}${x(p.ts).toFixed(2)},${y(Number(p[field]) || 0).toFixed(2)}`,
-      )
+      .map((p, i) => {
+        const px = x(p.ts),
+          py = y(Number(p[field]) || 0);
+        if (!i) return `M${px.toFixed(2)},${py.toFixed(2)}`;
+        const previous = data[i - 1],
+          midpoint = (x(previous.ts) + px) / 2;
+        return `C${midpoint.toFixed(2)},${y(Number(previous[field]) || 0).toFixed(2)} ${midpoint.toFixed(2)},${py.toFixed(2)} ${px.toFixed(2)},${py.toFixed(2)}`;
+      })
       .join(" ");
   const line = path(points),
     current = selected == null ? null : points[selected];
@@ -67,6 +80,7 @@ export default function LatencyChart({
     <div className="native-chart-wrap">
       <div
         className="latency-chart native-chart"
+        ref={container}
         role="figure"
         aria-label={`${workspace.mode === "sample" ? "Sample" : "Measured"} ${percentile} response times for ${range}`}
       >
@@ -111,8 +125,17 @@ export default function LatencyChart({
         >
           <defs>
             <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-              <stop stopColor="var(--green)" stopOpacity=".18" />
-              <stop offset="1" stopColor="var(--green)" stopOpacity="0" />
+              <stop stopColor="var(--purple)" stopOpacity=".27" />
+              <stop offset="1" stopColor="var(--purple)" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id={`${id}-line`}>
+              <stop stopColor="var(--blue)" />
+              <stop offset=".55" stopColor="var(--purple)" />
+              <stop offset="1" stopColor="var(--peach)" />
+            </linearGradient>
+            <linearGradient id={`${id}-cursor`} x2="0" y2="1">
+              <stop stopColor="var(--purple)" stopOpacity=".15" />
+              <stop offset="1" stopColor="var(--purple)" stopOpacity="0" />
             </linearGradient>
           </defs>
           {[0, 0.25, 0.5, 0.75, 1].map((v) => (
@@ -130,7 +153,7 @@ export default function LatencyChart({
                 y={y(v * max) + 4}
                 textAnchor="end"
                 fill="var(--muted)"
-                fontSize="10"
+                fontSize="9"
               >
                 {Math.round(v * max)}
               </text>
@@ -162,8 +185,9 @@ export default function LatencyChart({
               <path
                 d={line}
                 fill="none"
-                stroke="var(--green)"
-                strokeWidth="2"
+                stroke={`url(#${id}-line)`}
+                strokeWidth="2.5"
+                strokeLinecap="round"
                 vectorEffect="non-scaling-stroke"
               />
             </>
@@ -216,8 +240,8 @@ export default function LatencyChart({
               x2={width - 14}
               y1={y(summary[percentile]!)}
               y2={y(summary[percentile]!)}
-              stroke="var(--purple)"
-              opacity=".65"
+              stroke="var(--muted)"
+              opacity=".45"
               strokeDasharray="3 4"
             >
               <title>
@@ -247,16 +271,47 @@ export default function LatencyChart({
             <text
               key={v}
               x={left + v * (width - left - 14)}
-              y={187}
+              y={230}
               textAnchor={v === 0 ? "start" : v === 1 ? "end" : "middle"}
-              fontSize="10"
+              fontSize="9"
               fill="var(--muted)"
             >
               {label(new Date(start + v * (end - start)).toISOString())}
             </text>
           ))}
+          {!current && !breakdown && (
+            <>
+              <circle
+                cx={x(points.at(-1)!.ts)}
+                cy={y(points.at(-1)!.total_ms)}
+                r="7"
+                fill="var(--peach)"
+                opacity=".12"
+              />
+              <circle
+                cx={x(points.at(-1)!.ts)}
+                cy={y(points.at(-1)!.total_ms)}
+                r="3"
+                fill="var(--peach)"
+              />
+            </>
+          )}
           {current && (
             <>
+              <rect
+                x={Math.max(left, x(current.ts) - 22)}
+                y="10"
+                width="44"
+                height={bottom - 10}
+                fill={`url(#${id}-cursor)`}
+              />
+              <circle
+                cx={x(current.ts)}
+                cy={y(current.total_ms)}
+                r="9"
+                fill="var(--purple)"
+                opacity=".15"
+              />
               <line
                 x1={x(current.ts)}
                 x2={x(current.ts)}
@@ -269,20 +324,36 @@ export default function LatencyChart({
                 cx={x(current.ts)}
                 cy={y(current.total_ms)}
                 r="3.5"
-                fill="var(--green)"
+                fill="var(--purple)"
                 stroke="var(--surface)"
                 strokeWidth="2"
               />
             </>
           )}
         </svg>
+        {current && (
+          <div
+            className="chart-tooltip"
+            style={{
+              left: `${Math.max(22, Math.min(80, (x(current.ts) / width) * 100))}%`,
+            }}
+            aria-hidden="true"
+          >
+            <span>
+              {label(current.ts)} · {current.ok ? "OK" : "Failed"}
+            </span>
+            <strong>
+              {formatNumber(current.total_ms, 1)} <small>ms</small>
+            </strong>
+          </div>
+        )}
       </div>
       <div className="chart-reading" aria-live="polite">
         {current
           ? `${label(current.ts)} · ${formatNumber(current.total_ms, 1)} ms · ${current.ok ? "OK" : "Failed"}`
           : breakdown
             ? "Stacked: DNS · TCP · TLS · TTFB (ms)"
-            : "Solid: response per display bucket · dotted: selected percentile"}
+            : "Response / display bucket · dashed / period percentile"}
       </div>
     </div>
   );

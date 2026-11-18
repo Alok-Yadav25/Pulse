@@ -40,6 +40,7 @@ import { validateSite } from "./lib/demo";
 import { useWorkspace } from "./lib/workspace";
 import { readStorage, saveStorage } from "./lib/storage";
 import "./styles.css";
+import "./studio.css";
 import AuthModal from "./components/AuthModal";
 import { api } from "./lib/api";
 import { Radio as RadioIcon } from "lucide-react";
@@ -47,7 +48,7 @@ import { Radio as RadioIcon } from "lucide-react";
 const OtherPages = lazy(() => import("./components/OtherPages"));
 
 const navigation = [
-  { label: "Overview", to: "/", icon: LayoutDashboard, key: "G D" },
+  { label: "Overview", to: "/dashboard", icon: LayoutDashboard, key: "G D" },
   { label: "Monitors", to: "/monitors", icon: Activity, count: true },
   { label: "Traffic", to: "/traffic", icon: Users },
   { label: "Incidents", to: "/incidents", icon: TriangleAlert, alert: true },
@@ -126,7 +127,7 @@ function App() {
         setHelpOpen(true);
       }
       if (e.key === "g") lastG = Date.now();
-      if (e.key === "d" && Date.now() - lastG < 1000) navigate("/");
+      if (e.key === "d" && Date.now() - lastG < 1000) navigate("/dashboard");
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -169,7 +170,7 @@ function App() {
   const isLanding = location.pathname === "/welcome";
   const isPublic = location.pathname.startsWith("/status/");
   const pageTitle =
-    location.pathname === "/"
+    location.pathname === "/dashboard"
       ? "Overview"
       : location.pathname.startsWith("/monitors/")
         ? "Monitor details"
@@ -254,7 +255,7 @@ function App() {
           )}
           <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`}>
             <div className="sidebar-brand">
-              <Link to="/" aria-label="Pulse overview">
+              <Link to="/dashboard" aria-label="Pulse overview">
                 <Logo />
               </Link>
               <button
@@ -294,7 +295,7 @@ function App() {
                   <NavLink
                     key={to}
                     to={to}
-                    end={to === "/"}
+                    end={to === "/dashboard"}
                     className={({ isActive }) =>
                       isActive ? "nav-item active" : "nav-item"
                     }
@@ -335,8 +336,8 @@ function App() {
                 <span className="demo-card-icon">
                   <Sparkles size={16} />
                 </span>
-                <strong>A feel for the real thing.</strong>
-                <p>Explore a calmer way to keep an eye on your websites.</p>
+                <strong>A bigger perspective.</strong>
+                <p>Every heartbeat. One extraordinary view.</p>
                 <Link to="/welcome">
                   Meet Pulse
                   <ArrowUpRight size={13} />
@@ -432,11 +433,11 @@ function App() {
                 <div>
                   <div className="page-eyebrow">
                     <span className="eyebrow-line" />
-                    YOUR WEBSITE, IN THE KNOW
+                    YOUR SIGNAL STUDIO
                   </div>
                   <h1>
                     {pageTitle === "Overview"
-                      ? "A good day to be online."
+                      ? "Your web. In sync."
                       : pageTitle}
                     <span className="heading-dot">
                       {pageTitle === "Overview" && "✳"}
@@ -444,7 +445,7 @@ function App() {
                   </h1>
                   <p>
                     {pageTitle === "Overview"
-                      ? "All your websites. One clear picture. A little less to worry about."
+                      ? "Every signal, beautifully in focus."
                       : pageTitle === "Monitors"
                         ? "Every endpoint. Every heartbeat. Right where you need them."
                         : pageTitle === "Traffic"
@@ -593,7 +594,7 @@ function App() {
           >
             <Routes>
               <Route
-                path="/"
+                path="/dashboard"
                 element={
                   <Dashboard
                     range={range}

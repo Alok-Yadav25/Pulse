@@ -1,10 +1,10 @@
 # Pulse
 
-Website health, performance, and privacy-conscious visitor analytics in a calm, responsive workspace.
+Website health, performance, and privacy-conscious visitor analytics in a vivid, responsive signal studio.
 
 **Working locally:** FastAPI + PostgreSQL + React/Vite. Live mode includes timed public-URL probes, confirmed incidents, authenticated SSE, tracker ingestion, analytics, public status pages and badges, maintenance windows, release markers, assertions, grouped Slack/Discord/Telegram/webhook alerts, and incident reports. Sample mode is explicit and never replaces live data after an API error. No external deployment has been performed, as requested.
 
-[Dashboard](docs/previews/dashboard-dark.png) · [Light theme](docs/previews/dashboard-light.png) · [Landing](docs/previews/landing.png) · [Mobile](docs/previews/dashboard-mobile.png)
+[Hero](docs/previews/landing-hero.png) · [Dashboard](docs/previews/dashboard-dark.png) · [Light theme](docs/previews/dashboard-light.png) · [Landing](docs/previews/landing.png) · [Mobile](docs/previews/dashboard-mobile.png) · [Traffic](docs/previews/traffic.png)
 
 ## Run everything locally
 
@@ -16,12 +16,12 @@ python3 scripts/dev.py
 
 Or `npm run dev:all` from the repository root. The helper bootstraps missing dependencies, runs a native local Postgres process, applies migrations, and starts exactly one API worker plus Vite. Postgres files persist in `.local/postgres`; development secrets live in ignored environment configuration. Ctrl+C shuts down the owned services. No Docker account or cloud credentials are required.
 
-- App: **http://localhost:5173**
-- Introduction: **http://localhost:5173/welcome**
+- Landing: **http://localhost:5173** (also `/welcome`)
+- Dashboard: **http://localhost:5173/dashboard**
 - API explorer: **http://localhost:8000/docs**
 - Cheap liveness: `/healthz`; configuration and database readiness: `/readyz`.
 
-Click **Connect live → Create account** to save real monitors. Add the complete URL, including any endpoint path and query. Configure tags, groups, response assertions, public status, alerts, maintenance, releases, and the tracker in its settings.
+From the dashboard, click **Connect live → Create account** to save real monitors. Add the complete URL, including any endpoint path and query. Configure tags, groups, response assertions, public status, alerts, maintenance, releases, and the tracker in its settings.
 
 **Connect live → Try the live chaos demo** creates a read-only controlled monitor. **Break it** causes a bounded 45-second failure. Three failed checks open an incident; two successes close it. The demo uses a controlled in-process target, not a probe to an arbitrary private address.
 

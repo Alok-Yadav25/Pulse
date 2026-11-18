@@ -92,18 +92,44 @@ export function MetricCards({
               <span>{unit}</span>
             </div>
             <div className="metric-spark">
-              <Sparkline
-                values={summary.chart
-                  .slice(-22)
-                  .map((p) =>
-                    Math.min(
-                      55,
-                      10 + (p.total_ms / Math.max(1, summary.p99 || 1)) * 35,
-                    ),
-                  )}
-                color={`var(--${tone})`}
-                filled
-              />
+              {tone === "blue" ? (
+                <Sparkline
+                  values={summary.chart
+                    .slice(-22)
+                    .map((p) =>
+                      Math.min(
+                        55,
+                        10 + (p.total_ms / Math.max(1, summary.p99 || 1)) * 35,
+                      ),
+                    )}
+                  color="var(--blue)"
+                  filled
+                />
+              ) : tone === "mint" ? (
+                <div className="metric-uptime-bars" aria-hidden="true">
+                  {summary.chart.slice(-19).map((p, i) => (
+                    <i key={i} className={p.ok ? "" : "failed"} />
+                  ))}
+                </div>
+              ) : tone === "purple" ? (
+                <div className="metric-visitors-art" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                  <Users size={18} />
+                </div>
+              ) : (
+                <div className="metric-page-bars" aria-hidden="true">
+                  {traffic.top_pages.slice(0, 8).map((p, i) => (
+                    <i
+                      key={i}
+                      style={{
+                        height: `${Math.max(8, (p.count / Math.max(1, ...traffic.top_pages.map((p) => p.count))) * 100)}%`,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="metric-foot">
@@ -259,14 +285,71 @@ export function HealthPanel({ monitors }: { monitors: Monitor[] }) {
         </span>
       </div>
       <div className="health-orbit">
-        <div className="orbit orbit-one" />
-        <div className="orbit orbit-two" />
-        <div className="orbit orbit-three" />
-        <div className="orbit-core">
-          <ShieldCheck size={33} strokeWidth={1.4} />
-        </div>
-        <span className="orbit-speck one" />
-        <span className="orbit-speck two" />
+        <svg
+          className="health-ring-svg"
+          viewBox="0 0 200 200"
+          role="img"
+          aria-label={`${up} of ${monitors.length} monitors operational`}
+        >
+          <circle
+            cx="100"
+            cy="100"
+            r="60"
+            fill="none"
+            stroke="var(--border-soft)"
+            strokeWidth="1"
+          />
+          <circle
+            cx="100"
+            cy="100"
+            r="91"
+            fill="none"
+            stroke="var(--border-soft)"
+            strokeWidth=".7"
+            strokeDasharray="1 5"
+          />
+          {Array.from({ length: 48 }, (_, i) => {
+            const proportion = i / 48;
+            const color = monitors.length
+              ? proportion < up / monitors.length
+                ? "var(--green)"
+                : proportion < (up + degraded) / monitors.length
+                  ? "var(--peach)"
+                  : proportion < (up + degraded + down) / monitors.length
+                    ? "var(--down)"
+                    : "var(--border)"
+              : "var(--border)";
+            return (
+              <line
+                key={i}
+                x1="100"
+                x2="100"
+                y1="19"
+                y2="30"
+                transform={`rotate(${i * 7.5} 100 100)`}
+                stroke={color}
+                strokeWidth="3.4"
+                strokeLinecap="round"
+              />
+            );
+          })}
+          <text
+            x="100"
+            y="105"
+            textAnchor="middle"
+            className="health-ring-number"
+          >
+            {String(up).padStart(2, "0")}
+          </text>
+          <text
+            x="100"
+            y="124"
+            textAnchor="middle"
+            className="health-ring-label"
+          >
+            OF {String(monitors.length).padStart(2, "0")} ONLINE
+          </text>
+        </svg>
       </div>
       <div className="health-message">
         <h3>
@@ -275,8 +358,8 @@ export function HealthPanel({ monitors }: { monitors: Monitor[] }) {
             : stale
               ? "Waiting for fresh signals"
               : degraded
-                ? "Looking good overall"
-                : "All observed systems look good"}
+                ? "One signal to watch"
+                : "Everything in sync"}
         </h3>
         <p>
           {stale
@@ -583,7 +666,7 @@ export function InsightPanel() {
       <div>
         <span className="eyebrow">SIGNALS WITH CONTEXT</span>
         <h2>
-          {s.insight ? "A change worth a look." : "Know what was observed."}
+          {s.insight ? "A change worth a look." : "Clarity, at a glance."}
         </h2>
         <p>
           {s.insight?.message ||

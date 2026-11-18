@@ -42,7 +42,7 @@ Render currently documents idle spin-down after 15 minutes and a shared monthly 
 1. Open **Workers & Pages**, create a Pages project and connect the repository.
 2. Set root directory `web`, build command `npm run build`, output `dist`, Node version 22 and VITE_API_URL to the API's HTTPS origin. The repository checkout must include sibling `tracker`, because the web build also builds the API tracker asset.
 3. Deploy and copy the Pages origin into Render's ALLOWED_ORIGINS. Keep only intended origins in the allowlist.
-4. Verify `/welcome`, `/`, a nested monitor route after hard reload, login, the tracker install flow, an opted-in status page, and the controlled demo. `web/public/_redirects` supplies SPA routing. The static landing page works without waking the API.
+4. Verify `/`, `/welcome`, `/dashboard`, a nested monitor route after hard reload, login, the tracker install flow, an opted-in status page, and the controlled demo. `web/public/_redirects` supplies SPA routing. The static landing page works without waking the API.
 
 See [Cloudflare's build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/). If a provider builds only the selected root rather than the full checkout, build the tracker in CI first and deploy the web output separately.
 

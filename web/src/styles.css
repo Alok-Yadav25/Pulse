@@ -10,6 +10,14 @@
   src: url("/fonts/inter-latin-v1.woff2") format("woff2");
 }
 
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: optional;
+  src: url("/fonts/space-grotesk-latin-v1.woff2") format("woff2");
+}
+
 :root {
   color-scheme: dark;
   font-family:
@@ -18,27 +26,28 @@
     -apple-system,
     BlinkMacSystemFont,
     sans-serif;
-  --bg: #0d0f11;
-  --sidebar: #101214;
-  --surface: #141719;
-  --surface-raised: #1b1e21;
-  --surface-hover: #1a1e20;
-  --border: #252a2c;
-  --border-soft: #212628;
-  --text: #edf0ed;
-  --secondary: #b6bdb9;
-  --muted: #858f89;
-  --green: #a6e7bb;
-  --mint: #a6e7bb;
-  --blue: #aac8e9;
-  --purple: #c4b7e7;
-  --peach: #e8c7a6;
-  --warning: #e5ba7e;
-  --down: #ef8b96;
-  --accent-bg: #b7efca;
-  --accent-text: #1a3625;
-  --chart-grid: #282e2c;
-  --sidebar-width: 228px;
+  --display-font: "Space Grotesk", "Inter Variable", sans-serif;
+  --bg: #0b0b13;
+  --sidebar: #0e0d17;
+  --surface: #14121f;
+  --surface-raised: #1d192c;
+  --surface-hover: #201b30;
+  --border: #2c263e;
+  --border-soft: #242032;
+  --text: #f2effb;
+  --secondary: #c4bdd5;
+  --muted: #a39ab8;
+  --green: #d3ff7a;
+  --mint: #d3ff7a;
+  --blue: #80ceff;
+  --purple: #b5a0ff;
+  --peach: #ffab96;
+  --warning: #f4c27a;
+  --down: #ff839b;
+  --accent-bg: #d3ff7a;
+  --accent-text: #1b280d;
+  --chart-grid: #332a45;
+  --sidebar-width: 220px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -46,26 +55,26 @@
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f5f6f3;
-  --sidebar: #eef0eb;
-  --surface: #fff;
-  --surface-raised: #f0f3ed;
-  --surface-hover: #f1f5ef;
-  --border: #dce2d8;
-  --border-soft: #e6eae2;
-  --text: #202c24;
-  --secondary: #526253;
-  --muted: #637262;
-  --green: #287d49;
-  --mint: #287d49;
-  --blue: #4272a8;
-  --purple: #7f5bab;
-  --peach: #a76832;
-  --warning: #9d671d;
-  --down: #bf4154;
-  --accent-bg: #204f34;
-  --accent-text: #effcf2;
-  --chart-grid: #dce4d8;
+  --bg: #f5f3fa;
+  --sidebar: #eeebf5;
+  --surface: #ffffff;
+  --surface-raised: #eae5f3;
+  --surface-hover: #efeaf7;
+  --border: #ded7e9;
+  --border-soft: #e6e0ee;
+  --text: #211a34;
+  --secondary: #5a4e70;
+  --muted: #736380;
+  --green: #536e16;
+  --mint: #536e16;
+  --blue: #256ca0;
+  --purple: #7441be;
+  --peach: #b85431;
+  --warning: #91601c;
+  --down: #c33258;
+  --accent-bg: #29203d;
+  --accent-text: #eeffd6;
+  --chart-grid: #ded7ea;
 }
 
 * {

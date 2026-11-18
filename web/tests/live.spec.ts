@@ -3,7 +3,7 @@ const base='http://127.0.0.1:8000';
 
 test('live account saves a real monitor, assertions, groups, deployment and maintenance',async({page,request})=>{
  const email=`browser-${crypto.randomUUID()}@example.com`,password='local-browser-test-password';
- await page.goto('/');await page.getByRole('button',{name:'Connect live',exact:true}).click();const dialog=page.getByRole('dialog');
+ await page.goto('/dashboard');await page.getByRole('button',{name:'Connect live',exact:true}).click();const dialog=page.getByRole('dialog');
  await dialog.getByRole('button',{name:'Create account',exact:true}).click();await dialog.getByLabel('Email',{exact:true}).fill(email);await dialog.getByLabel('Password',{exact:true}).fill(password);await dialog.getByRole('button',{name:'Create account',exact:true}).last().click();
  await expect(page.getByText('Live workspace',{exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Add monitor',exact:true}).click();await page.getByRole('dialog').getByLabel('Monitor name').fill('Browser real monitor');await page.getByRole('dialog').getByLabel('Website URL').fill('https://example.com/health?region=in');await page.getByRole('dialog').getByRole('button',{name:'Add monitor',exact:true}).click();
@@ -18,7 +18,7 @@ test('live account saves a real monitor, assertions, groups, deployment and main
 });
 
 test('controlled chaos opens and resolves an incident live',async({page})=>{
- test.setTimeout(60000);await page.goto('/');await page.getByRole('button',{name:'Connect live',exact:true}).click();await page.getByRole('button',{name:'Try the live chaos demo'}).click();await expect(page.getByText('Live chaos demo',{exact:true})).toBeVisible();await expect(page.getByRole('table')).toContainText('Pulse chaos target');await page.getByRole('button',{name:'Break it',exact:true}).click();
+ test.setTimeout(60000);await page.goto('/dashboard');await page.getByRole('button',{name:'Connect live',exact:true}).click();await page.getByRole('button',{name:'Try the live chaos demo'}).click();await expect(page.getByText('Live chaos demo',{exact:true})).toBeVisible();await expect(page.getByRole('table')).toContainText('Pulse chaos target');await page.getByRole('button',{name:'Break it',exact:true}).click();
  await expect(page.getByRole('table').getByText('Down',{exact:true})).toBeVisible({timeout:25000});
  await page.getByRole('button',{name:'Recover',exact:true}).click();await expect(page.getByRole('table').getByText('Operational',{exact:true})).toBeVisible({timeout:20000});
 });
