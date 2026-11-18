@@ -1,17 +1,15 @@
-import { Activity } from "lucide-react";
 import { clsx } from "clsx";
 import type { Monitor } from "../lib/demo";
 export function Logo({ small = false }: { small?: boolean }) {
   return (
     <span className={clsx("brand", small && "small")}>
-      <span className="brand-mark">
-        <Activity size={23} strokeWidth={2.3} />
-      </span>
-      {!small && (
-        <span>
-          pulse<span className="brand-period">.</span>
-        </span>
-      )}
+      <img
+        className={small ? "pulse-logo pulse-logo-icon" : "pulse-logo"}
+        src={small ? "/brand/pulse-mark.svg" : "/brand/pulse-logo.svg"}
+        alt="Pulse"
+        width={small ? 32 : 146}
+        height={small ? 32 : 50}
+      />
     </span>
   );
 }

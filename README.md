@@ -4,7 +4,7 @@ Website health, performance, and privacy-conscious visitor analytics in a vivid,
 
 **Working locally:** FastAPI + PostgreSQL + React/Vite. Live mode includes timed public-URL probes, confirmed incidents, authenticated SSE, tracker ingestion, analytics, public status pages and badges, maintenance windows, release markers, assertions, grouped Slack/Discord/Telegram/webhook alerts, and incident reports. Sample mode is explicit and never replaces live data after an API error. No external deployment has been performed, as requested.
 
-[Hero](docs/previews/landing-hero.png) · [Dashboard](docs/previews/dashboard-dark.png) · [Light theme](docs/previews/dashboard-light.png) · [Landing](docs/previews/landing.png) · [Mobile](docs/previews/dashboard-mobile.png) · [Traffic](docs/previews/traffic.png)
+[Hero](docs/previews/landing.png) · [Dashboard](docs/previews/dashboard-dark.png) · [Light theme](docs/previews/dashboard-light.png) · [Landing](docs/previews/landing.png) · [Mobile](docs/previews/dashboard-mobile.png) · [Traffic](docs/previews/traffic.png)
 
 ## Run everything locally
 

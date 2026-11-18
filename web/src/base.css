@@ -365,3 +365,33 @@ svg {
   font-display: optional;
   src: url("/fonts/jetbrains-mono-latin-v1.woff2") format("woff2");
 }
+
+/* Supplied pink / indigo identity, with outlined lettering for consistent rendering. */
+.brand .pulse-logo {
+  display: block;
+  width: 146px;
+  height: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+.brand.small .pulse-logo-icon {
+  width: 30px;
+  height: 30px;
+}
+.sidebar-brand .brand .pulse-logo {
+  width: 132px;
+}
+.landing-footer .brand .pulse-logo {
+  width: 118px;
+}
+.public-status > footer .brand .pulse-logo {
+  width: 112px;
+}
+@media (max-width: 560px) {
+  .landing-nav .brand .pulse-logo {
+    width: 126px;
+  }
+  .landing-footer .brand .pulse-logo {
+    width: 106px;
+  }
+}

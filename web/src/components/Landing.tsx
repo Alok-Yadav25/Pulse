@@ -154,15 +154,26 @@ function SignalOrb({ tone }: { tone: string }) {
         stroke="#d9caff"
         strokeOpacity=".08"
       />
-      <path
-        d="M260 310H283L299 276L320 344L335 310H359"
-        fill="none"
-        stroke="#f0e9ff"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+      <g
         className="orb-heartbeat"
-      />
+        style={{ strokeDasharray: "none", strokeDashoffset: 0 }}
+      >
+        <circle cx="310" cy="310" r="58" fill="#403BAA" />
+        <g fill="#FFE1EA">
+          <circle cx="270" cy="310" r="5.8" />
+          <circle cx="350" cy="310" r="5.8" />
+        </g>
+        <g
+          fill="none"
+          stroke="#FFE1EA"
+          strokeWidth="11.2"
+          strokeLinecap="round"
+        >
+          <path d="M297 286 283 323" />
+          <path d="M321 275 297 345" />
+          <path d="M334 302 323 331" />
+        </g>
+      </g>
       <g className="orb-satellite" style={{ transformOrigin: "310px 310px" }}>
         <circle cx="310" cy="52" r="5" fill={tone} />
         <circle cx="310" cy="52" r="12" fill={tone} opacity=".12" />
