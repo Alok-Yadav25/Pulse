@@ -1000,3 +1000,65 @@
   font-feature-settings: "tnum" 1;
   letter-spacing: -0.025em;
 }
+.mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 16px 18px;
+  margin: 0 0 22px;
+  border: 1px solid #b5a0ff30;
+  border-radius: 13px;
+  background: linear-gradient(110deg, #b5a0ff0e, transparent), var(--surface);
+}
+.mode-banner > svg {
+  color: var(--purple);
+  flex-shrink: 0;
+}
+.mode-banner > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.mode-banner strong {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.6;
+  color: var(--text);
+}
+.mode-banner > div > span {
+  font-size: 11px;
+  font-weight: 450;
+  color: var(--muted);
+  line-height: 1.7;
+  letter-spacing: -0.02em;
+}
+.mode-banner > .button {
+  margin-left: auto;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .mode-banner {
+    padding: 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 17px;
+  }
+  .mode-banner strong {
+    font-size: 11px;
+  }
+  .mode-banner > div > span {
+    font-size: 10px;
+  }
+  .mode-banner > .button {
+    width: 100%;
+    margin-left: 0;
+    min-height: 37px;
+    font-size: 11px;
+  }
+  .mode-banner > svg {
+    width: 17px;
+  }
+}

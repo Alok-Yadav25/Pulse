@@ -9,6 +9,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from urllib.parse import urljoin
 
+import certifi
 import h11
 
 from app.config import get_settings
@@ -16,6 +17,13 @@ from app.services.ssrf import UnsafeURL, resolve_target
 
 MAX_BODY = 1024 * 1024
 semaphore = asyncio.Semaphore(10)
+
+
+def tls_context() -> ssl.SSLContext:
+    """Keep system trust and add portable CA roots, including on fresh macOS Python installs."""
+    context = ssl.create_default_context()
+    context.load_verify_locations(cafile=certifi.where())
+    return context
 
 
 @dataclass
@@ -87,7 +95,7 @@ async def request(url: str, method: str = "GET", payload: bytes | None = None) -
                     if target.tls:
                         stamp = time.perf_counter()
                         await writer.start_tls(
-                            ssl.create_default_context(), server_hostname=target.host
+                            tls_context(), server_hostname=target.host
                         )
                         result.tls_ms += (time.perf_counter() - stamp) * 1000
                         certificate = writer.get_extra_info("ssl_object").getpeercert()

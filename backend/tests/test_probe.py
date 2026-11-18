@@ -4,8 +4,18 @@ import asyncio
 import ssl
 import subprocess
 
-from app.services.probe import request
+from app.services.probe import request, tls_context
 from app.services.ssrf import Target, UnsafeURL
+
+
+def test_tls_context_keeps_verification_with_no_system_roots(monkeypatch):
+    empty = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    assert empty.cert_store_stats()["x509_ca"] == 0
+    monkeypatch.setattr("app.services.probe.ssl.create_default_context", lambda: empty)
+    context = tls_context()
+    assert context.cert_store_stats()["x509_ca"] > 0
+    assert context.check_hostname
+    assert context.verify_mode == ssl.CERT_REQUIRED
 
 
 async def test_close_delimited_response_and_phase_timing(monkeypatch):

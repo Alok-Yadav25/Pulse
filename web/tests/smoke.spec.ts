@@ -72,3 +72,11 @@ test('signal previews, primary action, and audience charts are interactive',asyn
  await page.screenshot({path:info.outputPath('traffic.png'),fullPage:true,animations:'disabled'});
  const result=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();expect(result.violations).toEqual([]);
 });
+
+test('sample monitor creation offers a clear transition to live monitoring',async({page})=>{
+ await page.goto('/dashboard');await expect(page.locator('.mode-banner')).toContainText('Live monitoring is off');
+ await page.getByRole('button',{name:'Add monitor',exact:true}).click();
+ const dialog=page.getByRole('dialog');await dialog.getByLabel('Monitor name').fill('YouTube');await dialog.getByLabel('Website URL').fill('https://www.youtube.com/');
+ await dialog.getByRole('button',{name:'Enable live monitoring',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Connect your workspace.'})).toBeVisible();await expect(page.getByRole('dialog').getByLabel('Email',{exact:true})).toBeVisible();
+});

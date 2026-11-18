@@ -21,6 +21,7 @@ dependencies = [
   "selectolax>=0.3.28,<1",
   "numpy>=2.2,<3",
   "h11>=0.16,<1",
+  "certifi>=2024.8.30",
 ]
 
 [project.optional-dependencies]

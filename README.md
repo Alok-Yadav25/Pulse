@@ -21,9 +21,11 @@ Or `npm run dev:all` from the repository root. The helper bootstraps missing dep
 - API explorer: **http://localhost:8000/docs**
 - Cheap liveness: `/healthz`; configuration and database readiness: `/readyz`.
 
-From the dashboard, click **Connect live → Create account** to save real monitors. Add the complete URL, including any endpoint path and query. Configure tags, groups, response assertions, public status, alerts, maintenance, releases, and the tracker in its settings.
+From the dashboard, click **Enable live monitoring → Create account** (or **Connect live** in the header) to save real monitors. Add the complete URL, including any endpoint path and query. Configure tags, groups, response assertions, public status, alerts, maintenance, releases, and the tracker in its settings.
 
 **Connect live → Try the live chaos demo** creates a read-only controlled monitor. **Break it** causes a bounded 45-second failure. Three failed checks open an incident; two successes close it. The demo uses a controlled in-process target, not a probe to an arbitrary private address.
+
+**A saved sample monitor does not run network checks.** To monitor YouTube, Spotify, or another public URL, connect a live account and add that URL in the live workspace. Uptime, response timing and TLS can be checked externally; visitor analytics and browser vitals require installing the tracker on a site you control.
 
 The sample workspace remains available without an API. Sample-only monitors are stored in the browser and do not issue probes. `/status/acme` is a reserved illustrative page; real public pages use the slug returned for each opted-in monitor.
 

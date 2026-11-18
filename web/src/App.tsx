@@ -530,6 +530,22 @@ function App() {
               )}
             </>
           )}
+          {!isLanding && !isPublic && workspace.mode === "sample" && (
+            <div className="mode-banner" role="status">
+              <RadioIcon size={19} aria-hidden="true" />
+              <div>
+                <strong>Sample preview · Live monitoring is off</strong>
+                <span>Connect a workspace to check real websites.</span>
+              </div>
+              <button
+                className="button button-primary"
+                onClick={() => setAuthOpen(true)}
+              >
+                Enable live monitoring
+                <ArrowUpRight size={14} />
+              </button>
+            </div>
+          )}
           {workspace.mode === "live" && (waking || workspace.error) && (
             <div className="connection-banner" role="status">
               <RadioIcon />
@@ -646,6 +662,7 @@ function App() {
         onOpenChange={setAddOpen}
         onSubmit={addMonitor}
         count={monitors.length}
+        onConnectLive={() => setAuthOpen(true)}
       />
       <Modal
         open={commandOpen}
@@ -807,11 +824,13 @@ function AddMonitorModal({
   onOpenChange,
   onSubmit,
   count,
+  onConnectLive,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (name: string, url: string) => Promise<string | null>;
   count: number;
+  onConnectLive: () => void;
 }) {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
@@ -876,6 +895,19 @@ function AddMonitorModal({
               : "Sample mode stores this monitor in your browser and does not run probes. Use Connect live to enable real monitoring."}
           </span>
         </div>
+        {workspace.mode === "sample" && (
+          <button
+            type="button"
+            className="button button-secondary full-width"
+            onClick={() => {
+              onOpenChange(false);
+              onConnectLive();
+            }}
+          >
+            Enable live monitoring
+            <ArrowUpRight size={14} />
+          </button>
+        )}
         {error && (
           <p className="form-error" role="alert">
             {error}

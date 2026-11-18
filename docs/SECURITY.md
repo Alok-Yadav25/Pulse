@@ -3,6 +3,7 @@
 ## Implemented boundaries
 
 - SSRF: HTTP(S) only; ports 80/443/8080/8443; no credentials, escaped hosts, control characters, or backslashes. All DNS answers must be public unicast. Private, loopback, link-local/metadata, CGNAT, mapped private IPv4, transition IPv6, NAT64, multicast, reserved, decimal/octal/hex tricks, and Pulse's configured domains are rejected. Connections use validated IPs, retain Host/SNI, and validate redirects again.
+- TLS trust: system roots are retained and supplemented with certifi's CA bundle. Certificate chain verification, expiry checks, hostname verification and original SNI remain enabled, including on macOS Python installations with an empty default trust store.
 - Authentication: Argon2 with a bounded 19 MiB working set and at most two concurrent hash operations; issuer/audience-bound HS256 JWTs; explicit expiry; ownership checked on every site and subordinate route; read-only demo accounts.
 - Requests: bounded 4 KiB beacon bodies and 16 KiB other write bodies, including chunked transport; Pydantic input limits; parameterized SQLAlchemy queries; explicit dashboard CORS origins; security headers; bounded rate-limit key storage and auth/ingest/write limits.
 - Alerts: HTTPS destinations only, the same public-network transport and DNS checks, no webhook redirect following, no webhook target secrets in API responses, grouping by incident/threshold, cooldown deferral, at most three delivery attempts.
