@@ -4,11 +4,11 @@ import { formatNumber } from "../lib/workspace-data";
 import type { Rank } from "../lib/workspace-data";
 
 const colors = [
-  "var(--purple)",
-  "var(--blue)",
-  "var(--peach)",
-  "var(--mint)",
-  "var(--warning)",
+  "var(--chart-blue)",
+  "var(--chart-teal)",
+  "var(--chart-violet)",
+  "var(--chart-green)",
+  "var(--chart-cyan)",
 ];
 /** Distribution from recorded page views, with a keyboard-accessible equivalent legend. */
 export default function AudienceChart({
@@ -19,6 +19,7 @@ export default function AudienceChart({
   referrers: Rank[];
 }) {
   const [dimension, setDimension] = useState<"Devices" | "Sources">("Devices");
+  const [chartStyle, setChartStyle] = useState<"Rings" | "Donut">("Rings");
   const [selected, setSelected] = useState<number | null>(null);
   const source = dimension === "Devices" ? devices : referrers;
   const rows =
@@ -55,9 +56,22 @@ export default function AudienceChart({
           </button>
         ))}
       </div>
+      <div className="audience-style-toggle" aria-label="Audience chart style">
+        {(["Rings", "Donut"] as const).map((style) => (
+          <button
+            key={style}
+            onClick={() => setChartStyle(style)}
+            aria-pressed={chartStyle === style}
+          >
+            {style}
+          </button>
+        ))}
+      </div>
       {total ? (
         <div className="audience-body">
-          <div className="audience-donut">
+          <div
+            className={`audience-donut ${chartStyle === "Rings" ? "audience-radial" : ""}`}
+          >
             <svg
               viewBox="0 0 220 220"
               role="img"
@@ -72,33 +86,57 @@ export default function AudienceChart({
                 strokeWidth=".5"
                 strokeDasharray="1 5"
               />
-              <circle
-                cx="110"
-                cy="110"
-                r="72"
-                fill="none"
-                stroke="var(--border-soft)"
-                strokeWidth="20"
-              />
+              {chartStyle === "Donut" && (
+                <circle
+                  cx="110"
+                  cy="110"
+                  r="72"
+                  fill="none"
+                  stroke="var(--ring-track)"
+                  strokeWidth="20"
+                />
+              )}
               {rows.map((row, i) => {
                 const start = offset;
                 offset += (row.count / total) * 100;
+                const radial = chartStyle === "Rings",
+                  radius = radial ? 88 - i * 14 : 72;
                 return (
-                  <circle
-                    key={row.name}
-                    cx="110"
-                    cy="110"
-                    r="72"
-                    pathLength="100"
-                    fill="none"
-                    stroke={colors[i]}
-                    strokeWidth={selected === i ? "24" : "20"}
-                    strokeDasharray={`${Math.max(0.1, (row.count / total) * 100 - 1.6)} 100`}
-                    strokeDashoffset={-start}
-                    transform="rotate(-90 110 110)"
-                    opacity={selected != null && selected !== i ? 0.25 : 1}
-                    className="audience-arc"
-                  />
+                  <g key={row.name}>
+                    {radial && (
+                      <circle
+                        cx="110"
+                        cy="110"
+                        r={radius}
+                        fill="none"
+                        stroke="var(--ring-track)"
+                        strokeWidth="8"
+                      />
+                    )}
+                    <circle
+                      cx="110"
+                      cy="110"
+                      r={radius}
+                      pathLength="100"
+                      fill="none"
+                      stroke={colors[i]}
+                      strokeWidth={
+                        radial
+                          ? selected === i
+                            ? "10"
+                            : "8"
+                          : selected === i
+                            ? "24"
+                            : "20"
+                      }
+                      strokeLinecap={radial ? "round" : "butt"}
+                      strokeDasharray={`${radial ? (row.count / total) * 100 : Math.max(0, (row.count / total) * 100 - 1.6)} 100`}
+                      strokeDashoffset={radial ? 0 : -start}
+                      transform="rotate(-90 110 110)"
+                      opacity={selected != null && selected !== i ? 0.25 : 1}
+                      className="audience-arc"
+                    />
+                  </g>
                 );
               })}
               <text
@@ -109,7 +147,12 @@ export default function AudienceChart({
               >
                 {active
                   ? `${Math.round((active.count / total) * 100)}%`
-                  : formatNumber(total)}
+                  : chartStyle === "Rings"
+                    ? new Intl.NumberFormat(undefined, {
+                        notation: "compact",
+                        maximumFractionDigits: 1,
+                      }).format(total)
+                    : formatNumber(total)}
               </text>
               <text
                 x="110"
@@ -117,7 +160,11 @@ export default function AudienceChart({
                 textAnchor="middle"
                 className="audience-label"
               >
-                {active ? active.name.toUpperCase().slice(0, 18) : "PAGE VIEWS"}
+                {active
+                  ? active.name
+                      .toUpperCase()
+                      .slice(0, chartStyle === "Rings" ? 9 : 18)
+                  : "VIEWS"}
               </text>
             </svg>
           </div>

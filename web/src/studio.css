@@ -1528,3 +1528,518 @@
 .vital-meter > span:last-child {
   flex: var(--vital-end);
 }
+/* Reference-inspired analytics: vivid layered areas, concentric ratios, and gradient columns. */
+.performance-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 475px;
+}
+.performance-panel > .chart-footer {
+  margin-top: auto;
+}
+.timing-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 15px;
+  padding: 16px 23px 6px;
+  min-height: 43px;
+}
+.timing-legend > button,
+.timing-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  color: var(--secondary);
+  padding: 3px 0;
+  white-space: nowrap;
+  border-radius: 4px;
+}
+.timing-legend > button {
+  border-bottom: 1px solid transparent;
+}
+.timing-legend > button:hover,
+.timing-legend > button[aria-pressed="true"] {
+  color: var(--text);
+  border-bottom-color: var(--phase-color);
+}
+.timing-legend i {
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--phase-color);
+  flex-shrink: 0;
+}
+.timing-legend strong {
+  font-family: var(--display-font);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text);
+  margin-left: 2px;
+}
+.timing-legend small {
+  font-size: 7px;
+  font-weight: 400;
+  margin-left: 2px;
+  color: var(--muted);
+}
+.legend-threshold {
+  font-size: 8px;
+  color: var(--muted);
+  margin-left: 15px;
+}
+.performance-panel .native-chart {
+  height: 264px;
+  margin-top: 5px;
+}
+.timing-area {
+  transition: opacity 0.25s;
+}
+.timing-tooltip {
+  min-width: 155px;
+}
+.timing-tooltip > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.timing-tooltip > div > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  color: var(--secondary);
+}
+.timing-tooltip i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.timing-tooltip b {
+  font-weight: 400;
+  margin-left: auto;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.metric-ring {
+  width: 54px;
+  height: 54px;
+  display: block;
+  margin-top: -9px;
+  margin-left: auto;
+  overflow: visible;
+  filter: drop-shadow(0 3px 5px #00000012);
+}
+.metric-ring-progress {
+  transition: stroke-dasharray 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.health-orbit.quality-orbit {
+  height: 208px;
+  margin: 0;
+  flex-shrink: 0;
+}
+.quality-rings-svg {
+  height: 215px;
+  width: 215px;
+  overflow: visible;
+}
+.quality-ring-progress {
+  transition: stroke-dasharray 0.7s ease;
+}
+.quality-ring-count {
+  font-family: var(--display-font);
+  font-size: 36px;
+  letter-spacing: -2px;
+  fill: var(--text);
+  font-weight: 500;
+}
+.quality-ring-total {
+  font-size: 15px;
+  fill: var(--muted);
+  letter-spacing: -0.4px;
+}
+.quality-ring-caption {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 6px;
+  letter-spacing: 1.1px;
+  fill: var(--muted);
+}
+.quality-rings-legend {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 22px 17px;
+  text-align: center;
+}
+.quality-rings-legend > div > span {
+  font-size: 8px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+}
+.quality-rings-legend i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.quality-rings-legend strong {
+  font-family: var(--display-font);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.6px;
+  color: var(--text);
+  display: block;
+  margin-top: 4px;
+}
+.quality-rings-legend small {
+  font-family: "Inter Variable", sans-serif;
+  font-size: 9px;
+  color: var(--muted);
+  margin-left: 2px;
+}
+.health-panel > .health-message {
+  margin-top: 0;
+}
+.health-panel .health-breakdown {
+  margin-top: 17px;
+  margin-bottom: 17px;
+}
+.health-panel .health-message h3 {
+  font-size: 16px;
+}
+.audience-style-toggle {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  padding: 14px 23px 0;
+}
+.audience-style-toggle button {
+  font-size: 9px;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+.audience-style-toggle button[aria-pressed="true"] {
+  background: var(--surface-raised);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.audience-radial .audience-value {
+  font-size: 21px;
+  letter-spacing: -0.7px;
+}
+.audience-radial .audience-label {
+  font-size: 5.5px;
+  letter-spacing: 0.4px;
+}
+.audience-radial .audience-arc {
+  filter: drop-shadow(0 2px 2px #00000008);
+}
+.audience-body {
+  padding-top: 9px;
+}
+.pages-chart-panel {
+  min-height: 330px;
+}
+.chart-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 8px;
+  padding: 4px 6px;
+  background: var(--surface-raised);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+.pages-chart {
+  height: 246px;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 9px;
+  padding: 28px 23px 40px 18px;
+}
+.pages-chart-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7px;
+  text-align: right;
+  padding-right: 3px;
+}
+.pages-chart-plot {
+  position: relative;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  align-items: end;
+  gap: 15px;
+  isolation: isolate;
+}
+.pages-chart-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      var(--chart-grid) 0,
+      var(--chart-grid) 0.5px,
+      transparent 0.5px,
+      transparent 25%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--chart-stripe) 0,
+      var(--chart-stripe) 18px,
+      transparent 18px,
+      transparent 36px
+    );
+}
+.pages-chart-column {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: column;
+  min-width: 0;
+}
+.pages-chart-column > button {
+  display: block;
+  height: var(--bar-height);
+  width: 58%;
+  min-width: 18px;
+  max-width: 43px;
+  position: relative;
+  padding: 0;
+  overflow: visible;
+  border-radius: 5px 5px 0 0;
+  transition:
+    filter 0.2s,
+    transform 0.2s;
+}
+.pages-chart-column > button svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pages-chart-column > button:hover,
+.pages-chart-column > button.selected {
+  filter: brightness(1.15)
+    drop-shadow(0 3px 8px color-mix(in srgb, var(--bar-color) 15%, transparent));
+  transform: translateY(-2px);
+}
+.pages-bar-count {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -20px;
+  white-space: nowrap;
+  font-family: var(--display-font);
+  font-size: 10px;
+  color: var(--text);
+}
+.pages-bar-label {
+  position: absolute;
+  bottom: -25px;
+  font-size: 9px;
+  color: var(--secondary);
+  left: 0;
+  right: 0;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 2px;
+}
+.pages-chart-detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 12px 23px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 9px;
+  color: var(--muted);
+}
+.pages-chart-detail > i {
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.pages-chart-detail > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pages-chart-detail strong {
+  font-family: var(--display-font);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.pages-chart-detail small {
+  font-family: "Inter Variable", sans-serif;
+  font-size: 8px;
+  color: var(--muted);
+  margin-left: 3px;
+}
+:root[data-theme="light"] .panel {
+  box-shadow:
+    0 4px 16px #343b6a07,
+    0 1px 3px #343b6a04;
+}
+:root[data-theme="light"] .metric-ring {
+  filter: drop-shadow(0 3px 3px #b6bfce55);
+}
+:root[data-theme="light"] .timing-area > path:first-child {
+  opacity: 0.9;
+}
+@media (max-width: 1100px) {
+  .timing-legend {
+    gap: 5px 10px;
+    padding-left: 19px;
+    padding-right: 19px;
+  }
+  .timing-legend > button {
+    font-size: 8px;
+  }
+  .timing-legend strong {
+    font-size: 9px;
+  }
+  .quality-rings-legend {
+    padding-left: 14px;
+    padding-right: 14px;
+    gap: 7px;
+  }
+  .quality-rings-legend > div > span {
+    font-size: 7px;
+  }
+  .quality-rings-legend strong {
+    font-size: 16px;
+  }
+  .pages-chart-plot {
+    gap: 9px;
+  }
+}
+@media (max-width: 760px) {
+  .health-orbit.quality-orbit {
+    height: 211px;
+  }
+  .quality-rings-svg {
+    height: 220px;
+    width: 220px;
+  }
+  .quality-rings-legend {
+    padding: 0 30px 18px;
+    gap: 16px;
+  }
+  .quality-rings-legend > div > span {
+    font-size: 9px;
+  }
+  .quality-rings-legend strong {
+    font-size: 20px;
+  }
+  .health-panel .health-message h3 {
+    font-size: 19px;
+  }
+  .health-panel .health-breakdown {
+    margin-top: 19px;
+    margin-bottom: 21px;
+  }
+  .metric-ring {
+    width: 50px;
+    height: 50px;
+    margin-top: -8px;
+  }
+}
+@media (max-width: 480px) {
+  .performance-panel {
+    min-height: 466px;
+  }
+  .performance-panel .native-chart {
+    height: 247px;
+  }
+  .timing-legend {
+    padding: 12px 18px 3px;
+    gap: 5px 10px;
+    min-height: 55px;
+  }
+  .timing-legend > button {
+    font-size: 9px;
+  }
+  .timing-legend strong {
+    font-size: 10px;
+  }
+  .metric-ring {
+    width: 41px;
+    height: 41px;
+    margin-top: -6px;
+  }
+  .quality-rings-legend {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  .audience-style-toggle {
+    padding: 14px 18px 0;
+  }
+  .audience-style-toggle button {
+    font-size: 9px;
+  }
+  .audience-radial .audience-value {
+    font-size: 19px;
+  }
+  .audience-radial .audience-label {
+    font-size: 5px;
+  }
+  .pages-chart {
+    padding-left: 12px;
+    padding-right: 18px;
+    height: 233px;
+    grid-template-columns: 25px 1fr;
+    gap: 7px;
+  }
+  .pages-chart-plot {
+    gap: 8px;
+  }
+  .pages-bar-label {
+    font-size: 8px;
+  }
+  .pages-chart-column > button {
+    width: 58%;
+    min-width: 14px;
+  }
+  .pages-chart-detail {
+    padding: 12px 18px;
+  }
+  .chart-type-badge {
+    font-size: 7px;
+    gap: 4px;
+  }
+  .chart-type-badge > svg {
+    width: 11px;
+  }
+  .pages-bar-count {
+    font-size: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .metric-ring-progress,
+  .quality-ring-progress,
+  .timing-area,
+  .pages-chart-column > button {
+    transition: none !important;
+  }
+}

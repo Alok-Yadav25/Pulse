@@ -156,10 +156,10 @@ export function sampleSummary(site: Monitor, range: Range): Summary {
     return {
       ts: new Date(end - duration + (i * duration) / 48).toISOString(),
       total_ms: total,
-      dns_ms: total * 0.06,
-      tcp_ms: total * 0.14,
-      tls_ms: total * 0.2,
-      ttfb_ms: total * 0.5,
+      dns_ms: total * (0.03 + (0.025 * (1 + Math.sin(i * 0.7))) / 2),
+      tcp_ms: total * (0.08 + (0.04 * (1 + Math.cos(i * 0.5))) / 2),
+      tls_ms: total * (0.12 + (0.09 * (1 + Math.sin(i * 0.3 + 0.4))) / 2),
+      ttfb_ms: total * (0.37 + (0.18 * (1 + Math.sin(i * 0.55 + 0.7))) / 2),
       ok: site.id !== "store" || i !== 36,
     };
   });
@@ -200,8 +200,17 @@ export function sampleTraffic(site: Monitor, range: Range): Traffic {
             ? 0.3
             : 0.52),
   );
-  const ranks = (names: string[], weights: number[]) =>
-    names.map((name, i) => ({ name, count: Math.round(views * weights[i]) }));
+  const ranks = (names: string[], weights: number[]) => {
+    let remaining = views;
+    return names.map((name, i) => {
+      const count =
+        i === names.length - 1
+          ? remaining
+          : Math.min(remaining, Math.round(views * weights[i]));
+      remaining -= count;
+      return { name, count };
+    });
+  };
   return {
     page_views: views,
     unique_visitors: Math.round(views * 0.61),

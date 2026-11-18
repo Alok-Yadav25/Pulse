@@ -5,20 +5,20 @@ These results describe the local production preview on macOS arm64 with Node 22.
 | Check | Observed result |
 | --- | --- |
 | TypeScript strict check and ESLint | Passed |
-| Vitest | 12 tests passed |
+| Vitest | 13 tests passed |
 | Ruff and pytest, including real PostgreSQL integration | 86 tests passed |
 | Alembic on a disposable PostgreSQL database | Upgrade, downgrade to base, upgrade passed |
-| Playwright production-build tests | 13 passed across desktop, mobile, and live workflows |
+| Playwright production-build tests | 10 updated UI flows passed on desktop and mobile; three live workflows were verified before this chart-only change |
 | Automated WCAG A/AA checks | No axe violations on landing, dashboard and traffic, desktop and mobile |
 | Landing Lighthouse, default mobile throttling, three runs | Performance 99 / 99 / 99; accessibility 100, best practices 96, SEO 100 in each run |
-| Landing LCP / CLS | 1.87–1.96 seconds / 0 in all three runs |
-| JavaScript entry | 65.7 KiB gzip |
-| All JavaScript, including every deferred route and chart | About 164.0 KiB gzip; build fails above 200 KiB |
-| Native SVG chart chunk | 2.5 KiB gzip |
+| Landing LCP / CLS | 2.00–2.11 seconds / 0 in all three runs |
+| JavaScript entry | 65.9 KiB gzip |
+| All JavaScript, including every deferred route and chart | About 166.1 KiB gzip; build fails above 200 KiB |
+| Native SVG chart chunk | 3.0 KiB gzip |
 | Dependency-free tracker | 1,284 bytes gzip; build fails above 2,048 bytes |
 | Runtime dependency audits | No known vulnerabilities reported by npm audit --omit=dev and pip-audit against the runtime lock |
 
-Browser tests cover sample persistence, full URL preservation, dark/light themes, range changes, keyboard chart inspection, stacked probe phases, hero signal controls, request-phase selection, audience chart interaction, responsive layout, real registration/configuration, releases, maintenance, controlled incident opening/recovery, actual tracker ingestion, stripped query strings, SPA navigation, and Do Not Track. The linked dashboard, landing, and status screenshots in `docs/previews` come from these runs. Axe and Lighthouse are automated evidence, not a complete manual accessibility certification.
+Browser tests cover sample persistence, full URL preservation, dark/light themes, range changes, keyboard chart inspection, stacked probe phases, hero signal controls, request-phase selection, audience chart modes, page-view bar inspection, phase layer selection, responsive layout, real registration/configuration, releases, maintenance, controlled incident opening/recovery, actual tracker ingestion, stripped query strings, SPA navigation, and Do Not Track. The linked dashboard, landing, and status screenshots in `docs/previews` come from these runs. Axe and Lighthouse are automated evidence, not a complete manual accessibility certification.
 
 The visual redesign retains a 99 Lighthouse performance score in all three sequential local runs. Lighthouse’s remaining best-practices deduction is for small decorative labels; accessibility, SEO, and layout stability scores are recorded separately.
 

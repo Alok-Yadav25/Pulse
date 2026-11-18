@@ -28,6 +28,16 @@ describe("consistent sample data", () => {
       ),
     );
     expect(a.count).toBe(a.chart.length);
+    expect(
+      a.chart.every(
+        (p) =>
+          (p.dns_ms || 0) +
+            (p.tcp_ms || 0) +
+            (p.tls_ms || 0) +
+            (p.ttfb_ms || 0) <=
+          p.total_ms,
+      ),
+    ).toBe(true);
     expect(a.chart.map((p) => p.ts)).toEqual(b.chart.map((p) => p.ts));
   });
   it("range changes affect both response metrics and traffic", () => {
@@ -37,6 +47,21 @@ describe("consistent sample data", () => {
     expect(sampleTraffic(demoMonitors[0], "30d").page_views).toBeGreaterThan(
       sampleTraffic(demoMonitors[0], "1h").page_views,
     );
+  });
+  it("sample distributions reconcile to the page-view total", () => {
+    for (const site of demoMonitors) {
+      const data = sampleTraffic(site, "24h");
+      for (const rows of [
+        data.top_pages,
+        data.referrers,
+        data.devices,
+        data.timezones,
+      ]) {
+        expect(rows.reduce((sum, row) => sum + row.count, 0)).toBe(
+          data.page_views,
+        );
+      }
+    }
   });
   it("pending monitors never inherit another monitor’s sample metrics", () => {
     const pending = { ...demoMonitors[0], status: "pending" as const };

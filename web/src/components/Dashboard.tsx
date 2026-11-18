@@ -18,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { Sparkline, StatusDot, UptimeStrip } from "./ui";
+import { ConcentricRings, MetricRing } from "./ChartPrimitives";
 import { useWorkspace } from "../lib/workspace";
 import { formatNumber } from "../lib/workspace-data";
 import type { Monitor, Range } from "../lib/demo";
@@ -106,11 +107,7 @@ export function MetricCards({
                   filled
                 />
               ) : tone === "mint" ? (
-                <div className="metric-uptime-bars" aria-hidden="true">
-                  {summary.chart.slice(-19).map((p, i) => (
-                    <i key={i} className={p.ok ? "" : "failed"} />
-                  ))}
-                </div>
+                <MetricRing value={summary.uptime} color="var(--chart-green)" />
               ) : tone === "purple" ? (
                 <div className="metric-visitors-art" aria-hidden="true">
                   <span />
@@ -153,7 +150,7 @@ export function PerformancePanel({
   const workspace = useWorkspace(),
     summary = workspace.summary(siteId);
   const [percentile, setPercentile] = useState<"p50" | "p95" | "p99">("p95"),
-    [breakdown, setBreakdown] = useState(false),
+    [breakdown, setBreakdown] = useState(true),
     [table, setTable] = useState(false);
   return (
     <section className="panel performance-panel">
@@ -267,6 +264,7 @@ export function PerformancePanel({
 
 export function HealthPanel({ monitors }: { monitors: Monitor[] }) {
   const workspace = useWorkspace(),
+    quality = workspace.summary(),
     down = monitors.filter((m) => m.status === "down").length,
     degraded = monitors.filter((m) => m.status === "degraded").length,
     up = monitors.filter((m) => m.status === "operational").length,
@@ -284,72 +282,58 @@ export function HealthPanel({ monitors }: { monitors: Monitor[] }) {
               : "Polling"}
         </span>
       </div>
-      <div className="health-orbit">
-        <svg
-          className="health-ring-svg"
-          viewBox="0 0 200 200"
-          role="img"
-          aria-label={`${up} of ${monitors.length} monitors operational`}
-        >
-          <circle
-            cx="100"
-            cy="100"
-            r="60"
-            fill="none"
-            stroke="var(--border-soft)"
-            strokeWidth="1"
-          />
-          <circle
-            cx="100"
-            cy="100"
-            r="91"
-            fill="none"
-            stroke="var(--border-soft)"
-            strokeWidth=".7"
-            strokeDasharray="1 5"
-          />
-          {Array.from({ length: 48 }, (_, i) => {
-            const proportion = i / 48;
-            const color = monitors.length
-              ? proportion < up / monitors.length
-                ? "var(--green)"
-                : proportion < (up + degraded) / monitors.length
-                  ? "var(--peach)"
-                  : proportion < (up + degraded + down) / monitors.length
-                    ? "var(--down)"
-                    : "var(--border)"
-              : "var(--border)";
-            return (
-              <line
-                key={i}
-                x1="100"
-                x2="100"
-                y1="19"
-                y2="30"
-                transform={`rotate(${i * 7.5} 100 100)`}
-                stroke={color}
-                strokeWidth="3.4"
-                strokeLinecap="round"
-              />
-            );
-          })}
-          <text
-            x="100"
-            y="105"
-            textAnchor="middle"
-            className="health-ring-number"
-          >
-            {String(up).padStart(2, "0")}
-          </text>
-          <text
-            x="100"
-            y="124"
-            textAnchor="middle"
-            className="health-ring-label"
-          >
-            OF {String(monitors.length).padStart(2, "0")} ONLINE
-          </text>
-        </svg>
+      <div className="health-orbit quality-orbit">
+        <ConcentricRings
+          count={up}
+          total={monitors.length}
+          metrics={[
+            {
+              label: "Uptime",
+              value: quality.uptime,
+              color: "var(--chart-blue)",
+            },
+            {
+              label: "Coverage",
+              value: quality.coverage,
+              color: "var(--chart-teal)",
+            },
+            {
+              label: "Apdex",
+              value: quality.apdex == null ? null : quality.apdex! * 100,
+              color: "var(--chart-violet)",
+            },
+          ]}
+        />
+      </div>
+      <div className="quality-rings-legend">
+        {[
+          {
+            label: "Uptime",
+            value: quality.uptime,
+            color: "var(--chart-blue)",
+          },
+          {
+            label: "Coverage",
+            value: quality.coverage,
+            color: "var(--chart-teal)",
+          },
+          {
+            label: "Apdex",
+            value: quality.apdex == null ? null : quality.apdex! * 100,
+            color: "var(--chart-violet)",
+          },
+        ].map((metric) => (
+          <div key={metric.label}>
+            <span>
+              <i style={{ background: metric.color }} />
+              {metric.label}
+            </span>
+            <strong>
+              {formatNumber(metric.value, 1)}
+              <small>{metric.value == null ? "" : "%"}</small>
+            </strong>
+          </div>
+        ))}
       </div>
       <div className="health-message">
         <h3>

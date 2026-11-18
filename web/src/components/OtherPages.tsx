@@ -27,6 +27,7 @@ import { EmptyState, Logo, Modal, StatusDot, UptimeStrip } from "./ui";
 import { MetricCards, PerformancePanel } from "./Dashboard";
 import Landing from "./Landing";
 import AudienceChart from "./AudienceChart";
+import PagesChart from "./PagesChart";
 import { api, API_URL, download } from "../lib/api";
 import { useWorkspace } from "../lib/workspace";
 import { demoMonitors } from "../lib/demo";
@@ -136,7 +137,7 @@ function Traffic({ range, siteId }: { range: Range; siteId?: string }) {
         siteId={selected === "all" ? undefined : selected}
       />
       <div className="traffic-grid">
-        <RankCard title="Top pages" rows={data.top_pages} />
+        <PagesChart rows={data.top_pages} />
         <RankCard title="Referrers" rows={data.referrers} />
         <AudienceChart devices={data.devices} referrers={data.referrers} />
         <RankCard title="Timezones" rows={data.timezones} />

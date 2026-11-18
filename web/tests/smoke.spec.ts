@@ -20,7 +20,7 @@ test('sample dashboard range, search, keyboard chart and light theme work',async
  await page.getByRole('button',{name:'7d',exact:true}).click();
  await expect(page.getByRole('button',{name:'7d',exact:true})).toHaveAttribute('aria-pressed','true');
  await expect(page.locator('.metric-card').last().locator('.metric-value')).not.toHaveText(before);
- await page.getByRole('button',{name:'Phase breakdown'}).click();await expect(page.locator('.chart-reading')).toContainText('Stacked');await page.getByRole('button',{name:'Total response'}).click();
+ await expect(page.locator('.chart-reading')).toContainText('Stacked');await page.locator('.timing-legend').getByRole('button',{name:/DNS/}).click();await expect(page.locator('.timing-legend').getByRole('button',{name:/DNS/})).toHaveAttribute('aria-pressed','true');await page.locator('.timing-legend').getByRole('button',{name:/DNS/}).click();await page.getByRole('button',{name:'Total response'}).click();await page.getByRole('button',{name:'Phase breakdown'}).click();await expect(page.locator('.chart-reading')).toContainText('Stacked');
  const chart=page.getByRole('group',{name:/Response time chart/});await chart.focus();await page.keyboard.press('ArrowRight');await expect(page.locator('.chart-reading')).toContainText('ms');
  if(info.project.name==='mobile')await page.getByRole('button',{name:'Open navigation'}).click();
  await page.getByRole('button',{name:/Search anything/}).click();await page.getByPlaceholder('Where would you like to go?').fill('Documentation');
@@ -58,6 +58,8 @@ test('signal previews, primary action, and audience charts are interactive',asyn
  await page.keyboard.press('Escape');
  await page.goto('/traffic');
  await expect(page.getByRole('heading',{name:'Audience mix'})).toBeVisible();
+ await page.locator('.audience-style-toggle').getByRole('button',{name:'Donut',exact:true}).click();await expect(page.locator('.audience-style-toggle').getByRole('button',{name:'Donut',exact:true})).toHaveAttribute('aria-pressed','true');await page.locator('.audience-style-toggle').getByRole('button',{name:'Rings',exact:true}).click();
+ await page.locator('.pages-chart-column button').first().focus();await expect(page.locator('.pages-chart-detail')).toContainText('12,447');
  await page.locator('.audience-controls').getByRole('button',{name:'Sources'}).click();
  await page.locator('.audience-legend button').first().focus();
  await expect(page.locator('.audience-label')).toHaveText('DIRECT');

@@ -198,9 +198,11 @@ function SignalOrb({ tone }: { tone: string }) {
 function MiniTrace({
   color = "#d3ff7a",
   id = "trace",
+  layered = false,
 }: {
   color?: string;
   id?: string;
+  layered?: boolean;
 }) {
   const path =
     "M0 66C18 65 18 46 36 49S62 64 78 54S102 37 118 43S136 67 152 55S170 36 188 41S207 51 220 35S235 7 250 31S268 56 285 42S307 24 325 33S346 49 361 37S384 24 400 29";
@@ -218,6 +220,28 @@ function MiniTrace({
         </linearGradient>
       </defs>
       <path d={`${path}V90H0Z`} fill={`url(#${id})`} />
+      {layered && (
+        <>
+          <path
+            d={`${path}V90H0Z`}
+            transform="translate(0 20) scale(1 .77)"
+            fill="var(--chart-teal)"
+            opacity=".85"
+          />
+          <path
+            d={`${path}V90H0Z`}
+            transform="translate(0 49) scale(1 .45)"
+            fill="var(--chart-green)"
+            opacity=".9"
+          />
+          <path
+            d={`${path}V90H0Z`}
+            transform="translate(0 69) scale(1 .23)"
+            fill="var(--chart-lime)"
+            opacity=".95"
+          />
+        </>
+      )}
       <path
         d={path}
         fill="none"
@@ -443,7 +467,11 @@ export default function Landing({ onAdd }: { onAdd: () => void }) {
               </div>
               <div className="landing-trace">
                 <div className="trace-grid" />
-                <MiniTrace color="#b5a0ff" id="performance-trace" />
+                <MiniTrace
+                  color="var(--chart-cyan)"
+                  id="performance-trace"
+                  layered
+                />
                 <span className="trace-mark">
                   142 <small>ms</small>
                 </span>

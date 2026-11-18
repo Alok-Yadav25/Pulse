@@ -395,3 +395,24 @@ svg {
     width: 106px;
   }
 }
+
+:root {
+  --chart-blue: #0da9ff;
+  --chart-cyan: #05c7ec;
+  --chart-teal: #03d5b1;
+  --chart-green: #70f39b;
+  --chart-lime: #c3fa8a;
+  --chart-violet: #8f6cff;
+  --ring-track: #292738;
+  --chart-stripe: #ffffff07;
+}
+:root[data-theme="light"] {
+  --chart-blue: #058ee0;
+  --chart-cyan: #039bc8;
+  --chart-teal: #009f89;
+  --chart-green: #16a665;
+  --chart-lime: #6caa30;
+  --chart-violet: #8662ed;
+  --ring-track: #ececf3;
+  --chart-stripe: #8492b510;
+}

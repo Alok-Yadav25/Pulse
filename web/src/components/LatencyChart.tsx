@@ -4,7 +4,31 @@ import { formatNumber, bucketChart } from "../lib/workspace-data";
 import type { ChartPoint } from "../lib/workspace";
 import type { Range } from "../lib/demo";
 
-/** A small SVG chart: mouse, touch, arrow-key exploration, gaps, and release markers. */
+const phases = [
+  { key: "dns_ms", label: "DNS", color: "var(--chart-lime)" },
+  { key: "tcp_ms", label: "TCP", color: "var(--chart-green)" },
+  { key: "tls_ms", label: "TLS", color: "var(--chart-teal)" },
+  { key: "ttfb_ms", label: "TTFB", color: "var(--chart-cyan)" },
+  { key: "other", label: "Other", color: "var(--chart-blue)" },
+] as const;
+type Phase = (typeof phases)[number]["key"];
+function timingParts(point: ChartPoint): Record<Phase, number> {
+  const known = {
+    dns_ms: Math.max(0, point.dns_ms || 0),
+    tcp_ms: Math.max(0, point.tcp_ms || 0),
+    tls_ms: Math.max(0, point.tls_ms || 0),
+    ttfb_ms: Math.max(0, point.ttfb_ms || 0),
+  };
+  return {
+    ...known,
+    other: Math.max(
+      0,
+      point.total_ms - Object.values(known).reduce((a, b) => a + b, 0),
+    ),
+  };
+}
+
+/** Layered measured timing areas, with pointer/keyboard inspection and accessible data. */
 export default function LatencyChart({
   range,
   percentile,
@@ -19,15 +43,16 @@ export default function LatencyChart({
   markers?: { ts: string; version: string }[];
 }) {
   const workspace = useWorkspace(),
-    summary = workspace.summary(siteId);
-  const id = useId().replace(/:/g, "");
-  const [selected, setSelected] = useState<number | null>(null);
+    summary = workspace.summary(siteId),
+    id = useId().replace(/:/g, "");
+  const [selected, setSelected] = useState<number | null>(null),
+    [activePhase, setActivePhase] = useState<Phase | null>(null);
   const points =
     !siteId && workspace.monitors.length > 1
       ? bucketChart(summary.chart)
       : summary.chart;
-  const container = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(760);
+  const container = useRef<HTMLDivElement>(null),
+    [width, setWidth] = useState(760);
   useEffect(() => {
     if (!container.current) return;
     const observer = new ResizeObserver(([entry]) =>
@@ -36,39 +61,53 @@ export default function LatencyChart({
     observer.observe(container.current);
     return () => observer.disconnect();
   }, [points.length]);
-  const height = 240,
+  const height = 258,
     left = 42,
-    bottom = 204;
+    bottom = 218;
   const max =
-    Math.max(100, summary[percentile] || 0, ...points.map((p) => p.total_ms)) *
-    1.15;
+    Math.max(
+      100,
+      breakdown ? 0 : summary[percentile] || 0,
+      ...points.map((p) =>
+        Math.max(
+          p.total_ms,
+          Object.values(timingParts(p)).reduce((a, b) => a + b, 0),
+        ),
+      ),
+    ) * 1.12;
   const start = points.length ? Date.parse(points[0].ts) : Date.now() - 3600000,
     end = points.length
       ? Math.max(start + 1, Date.parse(points.at(-1)!.ts))
       : Date.now();
   const x = (ts: string) =>
-    left + ((Date.parse(ts) - start) / (end - start)) * (width - left - 14);
-  const y = (value: number) => bottom - (value / max) * (bottom - 12);
-  const path = (data: ChartPoint[], field: keyof ChartPoint = "total_ms") =>
+      left + ((Date.parse(ts) - start) / (end - start)) * (width - left - 14),
+    y = (value: number) => bottom - (value / max) * (bottom - 15);
+  const path = (data: ChartPoint[]) =>
     data
       .map((p, i) => {
         const px = x(p.ts),
-          py = y(Number(p[field]) || 0);
+          py = y(p.total_ms);
         if (!i) return `M${px.toFixed(2)},${py.toFixed(2)}`;
         const previous = data[i - 1],
-          midpoint = (x(previous.ts) + px) / 2;
-        return `C${midpoint.toFixed(2)},${y(Number(previous[field]) || 0).toFixed(2)} ${midpoint.toFixed(2)},${py.toFixed(2)} ${px.toFixed(2)},${py.toFixed(2)}`;
+          mid = (x(previous.ts) + px) / 2;
+        return `C${mid.toFixed(2)},${y(previous.total_ms).toFixed(2)} ${mid.toFixed(2)},${py.toFixed(2)} ${px.toFixed(2)},${py.toFixed(2)}`;
       })
       .join(" ");
-  const line = path(points),
-    current = selected == null ? null : points[selected];
-  const label = (date: string) =>
-    new Date(date).toLocaleString(
-      undefined,
-      range === "1h" || range === "24h"
-        ? { hour: "2-digit", minute: "2-digit" }
-        : { month: "short", day: "numeric" },
-    );
+  const cumulative = (count: number) =>
+    points.map((p) => ({
+      ...p,
+      total_ms: phases
+        .slice(0, count)
+        .reduce((sum, phase) => sum + timingParts(p)[phase.key], 0),
+    }));
+  const current = selected == null ? null : points[selected],
+    label = (date: string) =>
+      new Date(date).toLocaleString(
+        undefined,
+        range === "1h" || range === "24h"
+          ? { hour: "2-digit", minute: "2-digit" }
+          : { month: "short", day: "numeric" },
+      );
   if (!points.length)
     return (
       <div className="chart-empty">
@@ -76,8 +115,48 @@ export default function LatencyChart({
         <p>Measurements appear after the first probe.</p>
       </div>
     );
+  const line = path(points),
+    baseline = `L${x(points.at(-1)!.ts)},${bottom} L${left},${bottom} Z`;
   return (
-    <div className="native-chart-wrap">
+    <div
+      className={`native-chart-wrap ${breakdown ? "layered-chart" : "total-chart"}`}
+    >
+      <div className="timing-legend" aria-label="Request timing legend">
+        {breakdown ? (
+          phases.map((phase) => (
+            <button
+              key={phase.key}
+              aria-pressed={activePhase === phase.key}
+              onClick={() =>
+                setActivePhase(activePhase === phase.key ? null : phase.key)
+              }
+              style={{ "--phase-color": phase.color } as React.CSSProperties}
+              title={`${phase.label}: ${formatNumber(current ? timingParts(current)[phase.key] : points.reduce((sum, p) => sum + timingParts(p)[phase.key], 0) / points.length, 1)} ms ${current ? "at selected check" : "average"}`}
+            >
+              <i />
+              {phase.label}
+              <strong>
+                {formatNumber(
+                  current
+                    ? timingParts(current)[phase.key]
+                    : points.reduce(
+                        (sum, p) => sum + timingParts(p)[phase.key],
+                        0,
+                      ) / points.length,
+                  0,
+                )}
+                <small>ms</small>
+              </strong>
+            </button>
+          ))
+        ) : (
+          <span>
+            <i style={{ background: "var(--chart-cyan)" }} />
+            Total response
+            <span className="legend-threshold">Dashed / {percentile}</span>
+          </span>
+        )}
+      </div>
       <div
         className="latency-chart native-chart"
         ref={container}
@@ -124,20 +203,49 @@ export default function LatencyChart({
           onPointerLeave={() => setSelected(null)}
         >
           <defs>
-            <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-              <stop stopColor="var(--purple)" stopOpacity=".27" />
-              <stop offset="1" stopColor="var(--purple)" stopOpacity="0" />
-            </linearGradient>
-            <linearGradient id={`${id}-line`}>
-              <stop stopColor="var(--blue)" />
-              <stop offset=".55" stopColor="var(--purple)" />
-              <stop offset="1" stopColor="var(--peach)" />
+            {phases.map((phase) => (
+              <linearGradient
+                key={phase.key}
+                id={`${id}-${phase.key}`}
+                x2="0"
+                y2="1"
+              >
+                <stop stopColor={phase.color} stopOpacity=".95" />
+                <stop offset="1" stopColor={phase.color} stopOpacity=".48" />
+              </linearGradient>
+            ))}
+            <linearGradient id={`${id}-total`} x2="0" y2="1">
+              <stop stopColor="var(--chart-cyan)" stopOpacity=".4" />
+              <stop
+                offset="1"
+                stopColor="var(--chart-cyan)"
+                stopOpacity=".03"
+              />
             </linearGradient>
             <linearGradient id={`${id}-cursor`} x2="0" y2="1">
-              <stop stopColor="var(--purple)" stopOpacity=".15" />
-              <stop offset="1" stopColor="var(--purple)" stopOpacity="0" />
+              <stop stopColor="var(--chart-blue)" stopOpacity=".12" />
+              <stop offset="1" stopColor="var(--chart-blue)" stopOpacity="0" />
             </linearGradient>
+            <clipPath id={`${id}-plot`}>
+              <rect
+                x={left}
+                y="10"
+                width={width - left - 14}
+                height={bottom - 8}
+              />
+            </clipPath>
           </defs>
+          {[0, 0.2, 0.4, 0.6, 0.8].map((v, i) => (
+            <rect
+              key={v}
+              x={left + v * (width - left - 14)}
+              y="10"
+              width={(width - left - 14) / 10}
+              height={bottom - 10}
+              fill="var(--chart-stripe)"
+              opacity={i % 2 ? ".7" : ".4"}
+            />
+          ))}
           {[0, 0.25, 0.5, 0.75, 1].map((v) => (
             <g key={v}>
               <line
@@ -146,11 +254,11 @@ export default function LatencyChart({
                 y1={y(v * max)}
                 y2={y(v * max)}
                 stroke="var(--chart-grid)"
-                strokeDasharray="3 6"
+                strokeWidth=".6"
               />
               <text
                 x={left - 9}
-                y={y(v * max) + 4}
+                y={y(v * max) + 3}
                 textAnchor="end"
                 fill="var(--muted)"
                 fontSize="9"
@@ -159,119 +267,153 @@ export default function LatencyChart({
               </text>
             </g>
           ))}
-          {summary.gaps.map((gap, i) => (
-            <rect
-              key={i}
-              x={Math.max(left, x(gap.started_at))}
-              y="10"
-              width={Math.max(
-                0,
-                Math.min(width - 14, x(gap.ended_at)) -
-                  Math.max(left, x(gap.started_at)),
-              )}
-              height={bottom - 10}
-              fill="var(--warning)"
-              opacity=".13"
-            >
-              <title>Monitoring gap: {gap.reason}</title>
-            </rect>
-          ))}
-          {!breakdown && (
-            <>
-              <path
-                d={`${line} L${x(points.at(-1)!.ts)},${bottom} L${left},${bottom} Z`}
-                fill={`url(#${id})`}
-              />
-              <path
-                d={line}
-                fill="none"
-                stroke={`url(#${id}-line)`}
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-              />
-            </>
-          )}
-          {breakdown &&
-            (["dns_ms", "tcp_ms", "tls_ms", "ttfb_ms"] as const).map(
-              (field, index) => {
-                const fields = [
-                  "dns_ms",
-                  "tcp_ms",
-                  "tls_ms",
-                  "ttfb_ms",
-                ] as const;
-                const cumulative = (count: number) =>
-                  points.map((point) => ({
-                    ...point,
-                    total_ms: fields
-                      .slice(0, count)
-                      .reduce((sum, key) => sum + (point[key] || 0), 0),
-                  }));
+          <g clipPath={`url(#${id}-plot)`}>
+            {breakdown ? (
+              phases.map((phase, index) => {
                 const upper = cumulative(index + 1),
                   lower = cumulative(index).reverse();
-                const color = [
-                  "var(--blue)",
-                  "var(--purple)",
-                  "var(--peach)",
-                  "var(--green)",
-                ][index];
                 return (
-                  <g key={field}>
+                  <g
+                    key={phase.key}
+                    className="timing-area"
+                    opacity={
+                      activePhase && activePhase !== phase.key ? 0.23 : 1
+                    }
+                  >
                     <path
                       d={`${path(upper)} ${path(lower).replace(/^M/, "L")} Z`}
-                      fill={color}
-                      opacity=".16"
+                      fill={`url(#${id}-${phase.key})`}
                     />
                     <path
                       d={path(upper)}
                       fill="none"
-                      stroke={color}
-                      strokeWidth="1.4"
+                      stroke={phase.color}
+                      strokeWidth="1.2"
                       vectorEffect="non-scaling-stroke"
                     />
                   </g>
                 );
-              },
+              })
+            ) : (
+              <>
+                <path d={`${line} ${baseline}`} fill={`url(#${id}-total)`} />
+                <path
+                  d={line}
+                  fill="none"
+                  stroke="var(--chart-cyan)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+                {points
+                  .filter(
+                    (_, i) =>
+                      i % Math.max(1, Math.floor(points.length / 10)) === 0,
+                  )
+                  .map((p) => (
+                    <circle
+                      key={p.ts}
+                      cx={x(p.ts)}
+                      cy={y(p.total_ms)}
+                      r="2.7"
+                      fill="var(--chart-cyan)"
+                      stroke="var(--surface)"
+                      strokeWidth="1.5"
+                    />
+                  ))}
+              </>
             )}
-          {!breakdown && summary[percentile] != null && (
-            <line
-              x1={left}
-              x2={width - 14}
-              y1={y(summary[percentile]!)}
-              y2={y(summary[percentile]!)}
-              stroke="var(--muted)"
-              opacity=".45"
-              strokeDasharray="3 4"
-            >
-              <title>
-                {percentile}: {formatNumber(summary[percentile], 1)} ms
-              </title>
-            </line>
-          )}
-          {markers
-            .filter((m) => Date.parse(m.ts) >= start && Date.parse(m.ts) <= end)
-            .map((m, i) => (
-              <g key={i}>
+            {summary.gaps.map((gap, i) => (
+              <rect
+                key={i}
+                x={Math.max(left, x(gap.started_at))}
+                y="10"
+                width={Math.max(
+                  0,
+                  Math.min(width - 14, x(gap.ended_at)) -
+                    Math.max(left, x(gap.started_at)),
+                )}
+                height={bottom - 10}
+                fill="var(--warning)"
+                opacity=".18"
+              >
+                <title>Monitoring gap: {gap.reason}</title>
+              </rect>
+            ))}
+            {!breakdown && summary[percentile] != null && (
+              <line
+                x1={left}
+                x2={width - 14}
+                y1={y(summary[percentile]!)}
+                y2={y(summary[percentile]!)}
+                stroke="var(--muted)"
+                opacity=".5"
+                strokeDasharray="3 5"
+              >
+                <title>
+                  {percentile}: {formatNumber(summary[percentile], 1)} ms
+                </title>
+              </line>
+            )}
+            {markers
+              .filter(
+                (m) => Date.parse(m.ts) >= start && Date.parse(m.ts) <= end,
+              )
+              .map((m, i) => (
+                <g key={i}>
+                  <line
+                    x1={x(m.ts)}
+                    x2={x(m.ts)}
+                    y1="10"
+                    y2={bottom}
+                    stroke="var(--purple)"
+                    strokeDasharray="2 4"
+                  />
+                  <text
+                    x={x(m.ts) + 4}
+                    y="18"
+                    fontSize="9"
+                    fill="var(--purple)"
+                  >
+                    {m.version.slice(0, 14)}
+                  </text>
+                  <title>Release {m.version}</title>
+                </g>
+              ))}
+            {current && (
+              <>
+                <rect
+                  x={x(current.ts) - 16}
+                  y="10"
+                  width="32"
+                  height={bottom - 10}
+                  fill={`url(#${id}-cursor)`}
+                />
                 <line
-                  x1={x(m.ts)}
-                  x2={x(m.ts)}
+                  x1={x(current.ts)}
+                  x2={x(current.ts)}
                   y1="10"
                   y2={bottom}
-                  stroke="var(--blue)"
-                  strokeDasharray="2 4"
+                  stroke="var(--text)"
+                  opacity=".4"
+                  strokeDasharray="3 4"
                 />
-                <title>Release {m.version}</title>
-                <text x={x(m.ts) + 4} y="18" fontSize="9" fill="var(--blue)">
-                  {m.version.slice(0, 14)}
-                </text>
-              </g>
-            ))}
+                <circle
+                  cx={x(current.ts)}
+                  cy={y(current.total_ms)}
+                  r="4"
+                  fill="var(--chart-blue)"
+                  stroke="var(--surface)"
+                  strokeWidth="2"
+                />
+              </>
+            )}
+          </g>
           {[0, 0.25, 0.5, 0.75, 1].map((v) => (
             <text
               key={v}
               x={left + v * (width - left - 14)}
-              y={230}
+              y="248"
               textAnchor={v === 0 ? "start" : v === 1 ? "end" : "middle"}
               fontSize="9"
               fill="var(--muted)"
@@ -279,63 +421,12 @@ export default function LatencyChart({
               {label(new Date(start + v * (end - start)).toISOString())}
             </text>
           ))}
-          {!current && !breakdown && (
-            <>
-              <circle
-                cx={x(points.at(-1)!.ts)}
-                cy={y(points.at(-1)!.total_ms)}
-                r="7"
-                fill="var(--peach)"
-                opacity=".12"
-              />
-              <circle
-                cx={x(points.at(-1)!.ts)}
-                cy={y(points.at(-1)!.total_ms)}
-                r="3"
-                fill="var(--peach)"
-              />
-            </>
-          )}
-          {current && (
-            <>
-              <rect
-                x={Math.max(left, x(current.ts) - 22)}
-                y="10"
-                width="44"
-                height={bottom - 10}
-                fill={`url(#${id}-cursor)`}
-              />
-              <circle
-                cx={x(current.ts)}
-                cy={y(current.total_ms)}
-                r="9"
-                fill="var(--purple)"
-                opacity=".15"
-              />
-              <line
-                x1={x(current.ts)}
-                x2={x(current.ts)}
-                y1="10"
-                y2={bottom}
-                stroke="var(--muted)"
-                strokeDasharray="3 3"
-              />
-              <circle
-                cx={x(current.ts)}
-                cy={y(current.total_ms)}
-                r="3.5"
-                fill="var(--purple)"
-                stroke="var(--surface)"
-                strokeWidth="2"
-              />
-            </>
-          )}
         </svg>
         {current && (
           <div
-            className="chart-tooltip"
+            className="chart-tooltip timing-tooltip"
             style={{
-              left: `${Math.max(22, Math.min(80, (x(current.ts) / width) * 100))}%`,
+              left: `${Math.max(23, Math.min(77, (x(current.ts) / width) * 100))}%`,
             }}
             aria-hidden="true"
           >
@@ -343,8 +434,19 @@ export default function LatencyChart({
               {label(current.ts)} · {current.ok ? "OK" : "Failed"}
             </span>
             <strong>
-              {formatNumber(current.total_ms, 1)} <small>ms</small>
+              {formatNumber(current.total_ms, 1)} <small>ms total</small>
             </strong>
+            {breakdown && (
+              <div>
+                {phases.map((phase) => (
+                  <span key={phase.key}>
+                    <i style={{ background: phase.color }} />
+                    {phase.label}
+                    <b>{formatNumber(timingParts(current)[phase.key], 1)} ms</b>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -352,8 +454,8 @@ export default function LatencyChart({
         {current
           ? `${label(current.ts)} · ${formatNumber(current.total_ms, 1)} ms · ${current.ok ? "OK" : "Failed"}`
           : breakdown
-            ? "Stacked: DNS · TCP · TLS · TTFB (ms)"
-            : "Response / display bucket · dashed / period percentile"}
+            ? "Stacked request timing · averages per display bucket · Other includes transfer and overhead"
+            : "Response per display bucket · dashed line shows the period percentile"}
       </div>
     </div>
   );

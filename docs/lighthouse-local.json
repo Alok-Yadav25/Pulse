@@ -1,5 +1,5 @@
 {
-  "scope": "Redesigned local production landing, Lighthouse default mobile throttling, three sequential runs without parallel browser tests",
+  "scope": "Local production landing with supplied logo and layered graphics; three sequential Lighthouse mobile runs",
   "runs": [
     {
       "scores": {
@@ -8,7 +8,7 @@
         "best-practices": 96,
         "seo": 100
       },
-      "lcp_ms": 1870,
+      "lcp_ms": 2003,
       "cls": 0,
       "tbt_ms": 0
     },
@@ -19,7 +19,7 @@
         "best-practices": 96,
         "seo": 100
       },
-      "lcp_ms": 1957,
+      "lcp_ms": 2109,
       "cls": 0,
       "tbt_ms": 0
     },
@@ -30,7 +30,7 @@
         "best-practices": 96,
         "seo": 100
       },
-      "lcp_ms": 1953,
+      "lcp_ms": 2105,
       "cls": 0,
       "tbt_ms": 0
     }
