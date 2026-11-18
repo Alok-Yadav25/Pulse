@@ -27,6 +27,7 @@ import { EmptyState, Logo, Modal, StatusDot, UptimeStrip } from "./ui";
 import { MetricCards, PerformancePanel } from "./Dashboard";
 import Landing from "./Landing";
 import AudienceChart from "./AudienceChart";
+import CreatorCredit from "./CreatorCredit";
 import PagesChart from "./PagesChart";
 import { api, API_URL, download } from "../lib/api";
 import { useWorkspace } from "../lib/workspace";
@@ -1457,6 +1458,7 @@ function PublicStatus() {
             ? "Illustrative data"
             : "Gaps are excluded from site downtime"}
         </span>
+        <CreatorCredit />
       </footer>
     </div>
   );

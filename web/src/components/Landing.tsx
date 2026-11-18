@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Logo } from "./brand";
+import CreatorCredit from "./CreatorCredit";
 import "../landing.css";
 
 const signals = {
@@ -612,6 +613,7 @@ export default function Landing({ onAdd }: { onAdd: () => void }) {
           <Logo />
         </Link>
         <span>THE WEB MOVES. STAY IN PULSE.</span>
+        <CreatorCredit />
         <div>
           <Link to="/privacy">Privacy</Link>
           <Link to="/docs">

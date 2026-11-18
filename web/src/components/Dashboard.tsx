@@ -18,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { Sparkline, StatusDot, UptimeStrip } from "./ui";
+import CreatorCredit from "./CreatorCredit";
 import { ConcentricRings, MetricRing } from "./ChartPrimitives";
 import { useWorkspace } from "../lib/workspace";
 import { formatNumber } from "../lib/workspace-data";
@@ -700,9 +701,7 @@ export default function Dashboard({
               ? "Live events connected"
               : "Live events reconnecting · polling every 30 seconds"}
         </span>
-        <span>
-          Every signal, with context.<span className="mini-brand">✳</span>
-        </span>
+        <CreatorCredit />
       </div>
     </>
   );
